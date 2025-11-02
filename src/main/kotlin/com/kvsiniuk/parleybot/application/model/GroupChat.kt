@@ -4,9 +4,10 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
-data class UserData(
+data class GroupChat(
     @Id
     val chatId: Long,
-    val userName: String,
+    val targetChatId: Long,
+    val creatorUserId: Long
 ) {
 }

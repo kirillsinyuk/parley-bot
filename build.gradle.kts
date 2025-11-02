@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.kvsiniuk"
-version = "0.0.1-SNAPSHOT"
+version = "0.0.1"
 description = "parley-bot"
 
 val mapstructVersion = "1.5.3.Final"
@@ -30,6 +30,7 @@ dependencies {
 
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 	implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
 
 	kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
