@@ -1,8 +1,8 @@
 package com.kvsiniuk.parleybot.infrastructure.database
 
-import com.kvsinyuk.stickergenerator.applicaiton.domain.BotData
+import com.kvsiniuk.parleybot.application.model.UserData
 import org.springframework.data.mongodb.repository.MongoRepository
 
-interface UserDataRepository : MongoRepository<BotData, Long> {
-    fun findByChatId(chatId: Long): BotData?
+interface UserDataRepository : MongoRepository<UserData, Long> {
+    fun findByChatId(chatId: Long): UserData?
 }
