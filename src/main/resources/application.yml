@@ -1,6 +1,8 @@
 spring:
   application:
     name: parley-bot
+  messages:
+    basename: i18n/messages
   data:
     mongodb:
       database: stickers
