@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: parley-bot
+  data:
+    mongodb:
+      database: stickers
+      uri: ${MONGO_URI}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+bot:
+  token: ${BOT_TOKEN}
