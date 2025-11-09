@@ -4,13 +4,13 @@ import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
 import com.kvsiniuk.parleybot.config.MapstructConfig
 import com.pengrad.telegrambot.model.Update
 import org.mapstruct.Mapper
-import org.mapstruct.Mapping
 
 @Mapper(config = MapstructConfig::class)
 abstract class TelegramUpdateMessageMapper {
-	@Mapping(target = "chatId", expression = "java(update.message().chat().id())")
-	@Mapping(target = "userId", expression = "java(update.message().from().id())")
-	@Mapping(target = "userName", expression = "java(update.message().from().username())")
-	@Mapping(target = "message", expression = "java(update.message().text())")
-	abstract fun toMessage(update: Update): TelegramUpdateMessage
+	fun toMessage(update: Update) =
+		TelegramUpdateMessage(
+			message = update.message()?.text(),
+			chatId = update.message()?.chat()?.id() ?: 0,
+			userId = update.message()?.from()?.id() ?: 0
+		)
 }

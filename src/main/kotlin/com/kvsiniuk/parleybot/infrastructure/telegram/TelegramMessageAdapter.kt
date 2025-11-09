@@ -22,6 +22,14 @@ class TelegramMessageAdapter(
             .let { bot.execute(it) }
     }
 
+    override fun sendMessage(
+        chatId: Long,
+        message: String,
+    ) {
+        mapMessage(chatId, message)
+            .let { bot.execute(it) }
+    }
+
     private fun mapMessage(
         chatId: Long,
         msg: String,
