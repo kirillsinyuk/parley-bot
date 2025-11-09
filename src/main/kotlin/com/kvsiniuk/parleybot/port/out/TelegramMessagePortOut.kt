@@ -5,4 +5,9 @@ interface TelegramMessagePortOut {
         chatId: Long,
         msgCode: String,
     )
+
+    fun sendMessage(
+        chatId: Long,
+        message: String,
+    )
 }
