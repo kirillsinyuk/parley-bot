@@ -14,3 +14,8 @@ spring:
 
 bot:
   token: ${BOT_TOKEN}
+
+google:
+  project-id: ${GOOGLE_PROJECT_ID}
+  location: ${GOOGLE_PROJECT_LOCATION}
+
