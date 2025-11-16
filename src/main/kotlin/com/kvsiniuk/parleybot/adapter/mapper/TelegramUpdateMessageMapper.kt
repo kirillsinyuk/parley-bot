@@ -11,6 +11,7 @@ abstract class TelegramUpdateMessageMapper {
 		TelegramUpdateMessage(
 			message = update.message()?.text(),
 			chatId = update.message()?.chat()?.id() ?: 0,
-			userId = update.message()?.from()?.id() ?: 0
+			userId = update.message()?.from()?.id() ?: update.message()?.leftChatMember()?.id() ?: 0,
+			userLeftGroup = update.message()?.leftChatMember()?.id() != null
 		)
 }

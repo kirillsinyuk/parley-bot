@@ -8,4 +8,6 @@ interface UserRepository : MongoRepository<User, UUID> {
 	fun findAllByChatId(chatId: Long): List<User>
 
 	fun findByUserIdAndChatId(userId: Long, chatId: Long): User?
+
+	fun deleteByUserId(userId: Long): Boolean
 }

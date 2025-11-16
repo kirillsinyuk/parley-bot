@@ -7,6 +7,7 @@ enum class BotCommand(
     START("/start"),
     HELP("/help"),
     SET_LANG("/set_lang", "Set language"),
+    EXIT("/exit"),
 }
 
-val MENU_COMMANDS = setOf(BotCommand.SET_LANG)
+val MENU_COMMANDS = setOf(BotCommand.SET_LANG, BotCommand.EXIT)
