@@ -11,8 +11,12 @@ class TranslationProcessingService(
 	private val translateService: TranslateService,
 ): TranslationProcessingPortIn {
 	override fun getTranslations(request: GetTranslationsRequest): List<String> =
-		userRepository.findAllByChatId(request.chatId).stream()
+		getChatLanguages(request)
+			.map { language -> translateService.translate(request.message, language) }
+
+	private fun getChatLanguages(request: GetTranslationsRequest) =
+		userRepository.findAllByChatId(request.chatId)
 			.filter { user -> user.userId != request.userId }
-			.map { user -> translateService.translate(request.message, user.language) }
-			.toList()
+			.map { user -> user.language }
+			.distinct()
 }
