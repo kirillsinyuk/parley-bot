@@ -5,7 +5,7 @@ spring:
     basename: i18n/messages
   data:
     mongodb:
-      database: stickers
+      database: parley
       uri: ${MONGO_URI}
   servlet:
     multipart:
@@ -14,3 +14,8 @@ spring:
 
 bot:
   token: ${BOT_TOKEN}
+
+google:
+  project-id: ${GOOGLE_PROJECT_ID}
+  location: ${GOOGLE_PROJECT_LOCATION}
+

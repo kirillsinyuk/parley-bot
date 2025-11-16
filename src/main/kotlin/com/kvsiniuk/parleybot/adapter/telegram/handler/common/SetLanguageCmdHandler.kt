@@ -19,7 +19,7 @@ class SetLanguageCmdHandler(
         val stringLang = update.message!!.replace("${BotCommand.SET_LANG.command} ", "")
         val language = stringToEnum(stringLang)
         if (language != null) {
-            setLanguagePortIn.setLanguage(SetLanguageRequest(update.userId, update.chatId, language))
+            setLanguagePortIn.setLanguage(SetLanguageRequest(update.chatId, update.userId, language))
             telegramMessagePort.sendMessageByCode(update.chatId, "command.set_lang.response")
         } else {
             telegramMessagePort.sendMessageByCode(update.chatId, "Couldn't set language. Valid values: ${Language.values()}")
