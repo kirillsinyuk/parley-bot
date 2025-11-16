@@ -1,19 +1,20 @@
 version: "3"
 
 services:
-  mongodb:
-    image: mongo
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=example
-      - MONGO_INITDB_DATABASE=parley
-    ports:
-      - 27017:27017
   parley-bot:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
-      - 8080:8080
-    depends_on:
-      - mongodb
+      - "8080:8080"
+    volumes:
+      - ./data:/data
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:sqlite:/data/db.sqlite"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.sqlite.JDBC"
+      SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.SQLiteDialect"
+    deploy:
+      resources:
+        limits:
+          memory: 350m

@@ -1,6 +1,8 @@
 plugins {
 	kotlin("jvm") version "1.9.25"
 	kotlin("plugin.spring") version "1.9.25"
+	kotlin("plugin.jpa") version "1.9.25"
+	kotlin("plugin.allopen") version "1.9.25"
 	id("org.springframework.boot") version "3.5.7"
 	id("io.spring.dependency-management") version "1.1.7"
 	kotlin("kapt") version "1.9.25"
@@ -18,15 +20,22 @@ java {
 	}
 }
 
+allOpen {
+	annotation("jakarta.persistence.Entity")
+}
+
 repositories {
 	mavenCentral()
 }
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 	implementation("org.springframework.boot:spring-boot-starter-validation")
 	developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("org.xerial:sqlite-jdbc:3.45.2.0")
+	implementation("org.hibernate.orm:hibernate-community-dialects:6.4.4.Final")
 
 	implementation("com.google.cloud:google-cloud-translate:2.78.0")
 
