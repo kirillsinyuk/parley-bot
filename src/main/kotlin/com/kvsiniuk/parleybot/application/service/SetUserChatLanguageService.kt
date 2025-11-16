@@ -11,8 +11,12 @@ class SetUserChatLanguageService(
 	private val userRepository: UserRepository,
 ) : SetUserChatLanguagePortIn {
 	override fun setLanguage(request: SetLanguageRequest) {
-		userRepository.findByUserIdAndChatId(request.userId, request.chatId)
-			?: User(userId = request.userId, chatId = request.chatId, language = request.language)
-				.let { u -> userRepository.save(u) }
+		(userRepository.findByUserIdAndChatId(request.userId, request.chatId)
+			?: User(
+				userId = request.userId,
+				chatId = request.chatId
+			))
+			.apply { language = request.language }
+			.let { u -> userRepository.save(u) }
 	}
 }

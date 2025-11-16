@@ -5,7 +5,7 @@ spring:
     basename: i18n/messages
   data:
     mongodb:
-      database: stickers
+      database: parley
       uri: ${MONGO_URI}
   servlet:
     multipart:
