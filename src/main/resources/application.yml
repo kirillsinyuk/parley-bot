@@ -3,14 +3,20 @@ spring:
     name: parley-bot
   messages:
     basename: i18n/messages
-  data:
-    mongodb:
-      database: parley
-      uri: ${MONGO_URI}
   servlet:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
+  datasource:
+    url: jdbc:sqlite:db.sqlite
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.community.dialect.SQLiteDialect
+    open-in-view: false
 
 bot:
   token: ${BOT_TOKEN}
