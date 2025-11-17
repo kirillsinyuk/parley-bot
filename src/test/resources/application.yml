@@ -21,7 +21,7 @@ spring:
 bot:
   token: 123testToken
 
-google:
-  project-id: someProject
-  location: someLocation
+open-ai:
+  host: https://api.openai.com
+  api-key: $someToken
 

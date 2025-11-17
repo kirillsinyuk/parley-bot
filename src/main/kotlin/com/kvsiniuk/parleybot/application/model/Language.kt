@@ -1,13 +1,13 @@
 package com.kvsiniuk.parleybot.application.model
 
-enum class Language(val isoCode: String) {
-	RU("ru"),
-	EN("en"),
-	ES("es"),
-	GE("ka"),
-	JA("ja"),
-	DE("de"),
-	IT("it");
+enum class Language(val languageName: String) {
+	EN("english"),
+	ES("spanish"),
+	GE("georgian"),
+	JA("japanese"),
+	DE("deutsch"),
+	RU("russian"),
+	IT("italian");
 }
 
 fun stringToEnum(input: String): Language? {

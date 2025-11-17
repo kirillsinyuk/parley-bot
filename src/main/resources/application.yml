@@ -21,7 +21,7 @@ spring:
 bot:
   token: ${BOT_TOKEN}
 
-google:
-  project-id: ${GOOGLE_PROJECT_ID}
-  location: ${GOOGLE_PROJECT_LOCATION}
+open-ai:
+  host: https://api.openai.com
+  api-key: ${OPENAI_API_KEY}
 
