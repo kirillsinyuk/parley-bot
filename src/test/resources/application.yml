@@ -8,7 +8,7 @@ spring:
       max-file-size: 5MB
       max-request-size: 5MB
   datasource:
-    url: jdbc:sqlite:/data/db.sqlite
+    url: jdbc:sqlite:db.sqlite
     driver-class-name: org.sqlite.JDBC
   jpa:
     hibernate:
@@ -19,9 +19,9 @@ spring:
     open-in-view: false
 
 bot:
-  token: ${BOT_TOKEN}
+  token: 123testToken
 
 google:
-  project-id: ${GOOGLE_PROJECT_ID}
-  location: ${GOOGLE_PROJECT_LOCATION}
+  project-id: someProject
+  location: someLocation
 
