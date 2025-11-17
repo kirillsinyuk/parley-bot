@@ -11,7 +11,7 @@ services:
     volumes:
       - ./data:/data
     environment:
-      SPRING_DATASOURCE_URL: "jdbc:sqlite:/data/db.sqlite"
+      SPRING_DATASOURCE_URL: "jdbc:sqlite:db.sqlite"
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: "org.sqlite.JDBC"
       SPRING_JPA_DATABASE_PLATFORM: "org.hibernate.dialect.SQLiteDialect"
     deploy:
