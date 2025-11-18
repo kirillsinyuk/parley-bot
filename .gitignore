@@ -7,3 +7,4 @@
 gradlew.bat
 HELP.md
 /.gradle/
+db.sqlite
