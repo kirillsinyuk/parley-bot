@@ -37,6 +37,8 @@ dependencies {
 	implementation("org.xerial:sqlite-jdbc:3.45.2.0")
 	implementation("org.hibernate.orm:hibernate-community-dialects:6.4.4.Final")
 
+	implementation("com.openai:openai-java:4.8.0")
+
 	implementation("org.springframework.retry:spring-retry")
 	implementation("org.springframework:spring-aspects")
 
