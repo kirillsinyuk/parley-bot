@@ -36,7 +36,7 @@ class TranslateService(
 		## RULES
 		1. If the entire input text is already **primarily** in the target language →  
 		   return: { "translated": false, "result": "<original text>" }  
-		   (“Primarily” = more than 70% of the meaningful words are in the target language.)
+		   (“Primarily” = more than 30% of the meaningful words are in the target language.)
 		
 		2. If translation is needed:
 		   - Preserve meaning, tone, and register.
