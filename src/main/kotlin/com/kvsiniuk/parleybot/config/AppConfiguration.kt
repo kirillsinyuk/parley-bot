@@ -6,5 +6,5 @@ import org.springframework.retry.annotation.EnableRetry
 
 @Configuration
 @EnableRetry
-@EnableConfigurationProperties(value = [OpenaiConfigurationProperties::class])
+@EnableConfigurationProperties(value = [OpenaiConfigurationProperties::class, AdminConfigurationProperties::class])
 class AppConfiguration
