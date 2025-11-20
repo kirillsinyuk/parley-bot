@@ -1,7 +1,7 @@
 package com.kvsiniuk.parleybot.adapter.telegram.handler.common
 
 import com.kvsiniuk.parleybot.adapter.telegram.handler.TelegramUpdateHandler
-import com.kvsiniuk.parleybot.application.model.BotCommand
+import com.kvsiniuk.parleybot.application.model.MENU_COMMANDS
 import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
 import com.kvsiniuk.parleybot.port.`in`.TranslationProcessingPortIn
 import com.kvsiniuk.parleybot.port.`in`.model.GetTranslationsRequest
@@ -11,14 +11,15 @@ import org.springframework.util.StringUtils
 
 @Component
 class TranslateTextHandler(
-    private val translationProcessingPortIn: TranslationProcessingPortIn,
-    private val telegramMessagePortOut: TelegramMessagePortOut,
+	private val translationProcessingPortIn: TranslationProcessingPortIn,
+	private val telegramMessagePortOut: TelegramMessagePortOut,
 ) : TelegramUpdateHandler {
-    override fun process(update: TelegramUpdateMessage) {
-        translationProcessingPortIn.getTranslations(GetTranslationsRequest(update.chatId, update.userId, update.message!!))
-            .forEach { message -> telegramMessagePortOut.sendMessage(update.chatId, message)}
-    }
+	override fun process(update: TelegramUpdateMessage) {
+        GetTranslationsRequest(update.chatId, update.userId, update.message!!)
+            .let { translationProcessingPortIn.getTranslations(it) }
+			.forEach { message -> telegramMessagePortOut.sendMessage(update.chatId, message) }
+	}
 
-    override fun canApply(update: TelegramUpdateMessage) =
-        StringUtils.hasText(update.message) && !update.message!!.startsWith(BotCommand.SET_LANG.command)
+	override fun canApply(update: TelegramUpdateMessage) =
+		StringUtils.hasText(update.message) && MENU_COMMANDS.none { update.message!!.startsWith(it) }
 }
