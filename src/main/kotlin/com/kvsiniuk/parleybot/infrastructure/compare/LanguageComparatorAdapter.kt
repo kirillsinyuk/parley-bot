@@ -22,16 +22,31 @@ class LanguageComparatorAdapter(
 		You are a language comparator.
 
 		## OBJECTIVE
-		Compare languages of source and target texts.
-		
+		Determine whether sourceText and targetText are written in the same PRIMARY language.
+
+		## DEFINITIONS
+		PRIMARY LANGUAGE = the language used for the majority of meaningful words in a text.
+
+		Mixed-language text is common. English technical terms, code words, proper names, UI labels, or loanwords inside another language do NOT change the primary language.
+
+		Examples:
+		- "выглядит как feature-request" → primary language = Russian
+		- "Install драйвер" → primary language = Russian
+		- "I need to fix комп" → primary language = English
+
 		## RULES
-		1. You are given 2 texts: source and target. If languages in these texts are identical, return one word 'true'.
-		Otherwise return 'false'.
-		2. Some distinct words in different language are possible. It must not impact an overall result.
-		3. No explanations, no extra fields, no surrounding text. Only true of false.
-		
-		## OUTPUT FORMAT (MANDATORY)
-		You MUST return ONLY true of false
+		1. Identify the primary language of sourceText.
+		2. Identify the primary language of targetText.
+		3. If the primary languages match → output true.
+		4. If they differ → output false.
+		5. Ignore:
+		   - individual foreign words
+		   - English technical terms widely used in other languages (feature, bug, task, commit, request…)
+		   - code tokens or identifiers
+		   - transliterations
+		   - names, brand names, URLs
+		6. Consider the writing system (script) only as an additional clue, NOT the main rule.
+		7. Output ONLY: true or false. No quotes. No extra text.
 	"""
 
 	@Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
@@ -59,12 +74,14 @@ class LanguageComparatorAdapter(
 					)
 				)
 			)
-			.model(ChatModel.GPT_4_1_NANO)
+			.model(ChatModel.GPT_5_NANO)
 			.build()
 		return openaiClient.responses().create(params)
-			.output()[0]
+			.output()
+			.first { it.isMessage() }
 			.asMessage()
-			.content()[0]
+			.content()
+			.first { it.isOutputText() }
 			.asOutputText()
 			.text()
 	}
