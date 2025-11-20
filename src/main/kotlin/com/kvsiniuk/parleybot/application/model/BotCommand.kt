@@ -11,4 +11,4 @@ enum class BotCommand(
     FEEDBACK("/feedback"),
 }
 
-val MENU_COMMANDS = setOf(BotCommand.SET_LANG, BotCommand.EXIT)
+val MENU_COMMANDS = BotCommand.values().map { it.command }
