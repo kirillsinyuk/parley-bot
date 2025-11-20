@@ -3,6 +3,7 @@ package com.kvsiniuk.parleybot.application.service
 import com.kvsiniuk.parleybot.infrastructure.database.UserRepository
 import com.kvsiniuk.parleybot.port.`in`.TranslationProcessingPortIn
 import com.kvsiniuk.parleybot.port.`in`.model.GetTranslationsRequest
+import com.kvsiniuk.parleybot.port.out.LanguageComparatorPortOut
 import com.kvsiniuk.parleybot.port.out.TranslationPortOut
 import mu.KLogging
 import org.springframework.stereotype.Component
@@ -11,10 +12,12 @@ import org.springframework.stereotype.Component
 class TranslationProcessingService(
 	private val userRepository: UserRepository,
 	private val translateService: TranslationPortOut,
+	private val languageComparator: LanguageComparatorPortOut,
 ) : TranslationProcessingPortIn {
 	override fun getTranslations(request: GetTranslationsRequest): List<String> =
 		getChatLanguages(request)
 			.mapNotNull { getChatLanguages(request.message, it.languageName) }
+			.filter { languageComparator.haveSameLanguage(request.message, it) }
 
 	private fun getChatLanguages(request: GetTranslationsRequest) =
 		userRepository.findAllByChatId(request.chatId)
