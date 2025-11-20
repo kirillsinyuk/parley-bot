@@ -25,3 +25,6 @@ open-ai:
   host: https://api.openai.com
   api-key: ${OPENAI_API_KEY}
 
+admin:
+  chat-id: ${ADMIN_CHAT_ID}
+
