@@ -1,5 +1,6 @@
 package com.kvsiniuk.parleybot.application.service
 
+import com.kvsiniuk.parleybot.application.model.Language
 import com.kvsiniuk.parleybot.infrastructure.database.UserRepository
 import com.kvsiniuk.parleybot.port.`in`.TranslationProcessingPortIn
 import com.kvsiniuk.parleybot.port.`in`.model.GetTranslationsRequest
@@ -15,9 +16,8 @@ class TranslationProcessingService(
 	private val languageComparator: LanguageComparatorPortOut,
 ) : TranslationProcessingPortIn {
 	override fun getTranslations(request: GetTranslationsRequest): List<String> =
-		getChatLanguages(request)
-			.mapNotNull { getChatLanguages(request.message, it.languageName) }
-			.filter { languageComparator.haveSameLanguage(request.message, it) }
+		 listOf(getChatLanguages(request.message, Language.RU.languageName)!!)
+			.filter { !languageComparator.haveSameLanguage(request.message, it) }
 
 	private fun getChatLanguages(request: GetTranslationsRequest) =
 		userRepository.findAllByChatId(request.chatId)
