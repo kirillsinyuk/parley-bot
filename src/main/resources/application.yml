@@ -17,6 +17,11 @@ spring:
       hibernate:
         dialect: org.hibernate.community.dialect.SQLiteDialect
     open-in-view: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: loggers,health,info,metrics
 
 bot:
   token: ${BOT_TOKEN}
