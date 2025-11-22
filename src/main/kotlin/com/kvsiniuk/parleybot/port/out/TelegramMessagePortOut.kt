@@ -10,4 +10,9 @@ interface TelegramMessagePortOut {
         chatId: Long,
         message: String,
     )
+
+    fun sendVoice(
+        chatId: Long,
+        voice: ByteArray,
+    )
 }
