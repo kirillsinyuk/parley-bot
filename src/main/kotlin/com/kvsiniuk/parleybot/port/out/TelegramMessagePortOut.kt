@@ -1,5 +1,7 @@
 package com.kvsiniuk.parleybot.port.out
 
+import java.io.File
+
 interface TelegramMessagePortOut {
     fun sendMessageByCode(
         chatId: Long,
@@ -13,6 +15,6 @@ interface TelegramMessagePortOut {
 
     fun sendVoice(
         chatId: Long,
-        voice: ByteArray,
+        voice: File,
     )
 }

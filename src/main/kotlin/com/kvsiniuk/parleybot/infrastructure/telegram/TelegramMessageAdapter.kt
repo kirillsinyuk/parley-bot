@@ -6,6 +6,8 @@ import com.pengrad.telegrambot.TelegramBot
 import com.pengrad.telegrambot.model.request.ParseMode
 import com.pengrad.telegrambot.request.SendMessage
 import com.pengrad.telegrambot.request.SendVoice
+import java.io.File
+import java.nio.file.Files
 import org.springframework.stereotype.Component
 
 @Component
@@ -31,14 +33,19 @@ class TelegramMessageAdapter(
             .let { bot.execute(it) }
     }
 
-    override fun sendVoice(chatId: Long, voice: ByteArray) {
-        mapVoice(chatId, voice)
-            .let { bot.execute(it) }
+    override fun sendVoice(chatId: Long, voice: File) {
+        try {
+            mapVoice(chatId, voice)
+                .let { bot.execute(it) }
+        } finally {
+            Files.deleteIfExists(voice.toPath())
+        }
+
     }
 
     private fun mapVoice(
         chatId: Long,
-        msg: ByteArray,
+        msg: File,
     ) = SendVoice(chatId, msg)
 
     private fun mapMessage(
