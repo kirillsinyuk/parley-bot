@@ -21,14 +21,10 @@ class TextToSpeechAdapter(
 	private final val SYSTEM_PROMPT = "Speak in a neutral and positive tone."
 
 	@Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
-	override fun translateToVoice(text: String): ByteArray {
-		val bos = ByteArrayOutputStream()
-		openaiClientCall(text).use { input ->
-			bos.use { output ->
-				input.copyTo(output)
-			}
-		}
-		return bos.toByteArray()
+	override fun translateToVoice(text: String): File {
+		val tempFile = File.createTempFile("upload_", ".mp3")
+		openaiClientCall(text).use { it.copyTo(tempFile.outputStream()) }
+		return tempFile
 	}
 
 	private fun openaiClientCall(sourceText: String): InputStream {
