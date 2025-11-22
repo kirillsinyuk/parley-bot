@@ -14,7 +14,7 @@ class FeedbackCmdHandler(
     private val adminConfigurationProperties: AdminConfigurationProperties,
 ) : TelegramUpdateHandler {
     override fun process(update: TelegramUpdateMessage) {
-        val feedbackMsg = "A feedback from ${update.userId}, chatId ${update.chatId}: ${update.message}"
+        val feedbackMsg = "A feedback from ${update.userId}, chatId ${update.chatId}: ${update.message}. Reply to: ${update.replyText}"
         telegramMessagePort.sendMessage(adminConfigurationProperties.chatId, feedbackMsg)
             .also { logger.warn { feedbackMsg } }
         telegramMessagePort.sendMessageByCode(update.chatId, "command.feedback.response")
