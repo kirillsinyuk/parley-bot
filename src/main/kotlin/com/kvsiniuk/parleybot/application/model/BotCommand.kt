@@ -9,6 +9,7 @@ enum class BotCommand(
     SET_LANG("/set_lang", "Set language"),
     EXIT("/exit", "Leave translation"),
     FEEDBACK("/feedback"),
+    VOICE("/voice"),
 }
 
 val MENU_COMMANDS = BotCommand.values().map { it.command }

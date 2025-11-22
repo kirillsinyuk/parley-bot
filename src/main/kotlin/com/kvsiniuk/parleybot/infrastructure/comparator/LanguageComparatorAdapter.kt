@@ -1,4 +1,4 @@
-package com.kvsiniuk.parleybot.infrastructure.compare
+package com.kvsiniuk.parleybot.infrastructure.comparator
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.kvsiniuk.parleybot.port.out.LanguageComparatorPortOut
