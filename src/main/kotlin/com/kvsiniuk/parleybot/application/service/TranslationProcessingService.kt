@@ -16,8 +16,8 @@ class TranslationProcessingService(
 ) : TranslationProcessingPortIn {
 	override fun getTranslations(request: GetTranslationsRequest): List<String> =
 		getChatLanguages(request)
+			.filter { !languageComparator.haveSameLanguage(request.message, it.languageName) }
 			.mapNotNull { getChatLanguages(request.message, it.languageName) }
-			.filter { !languageComparator.haveSameLanguage(request.message, it) }
 
 	private fun getChatLanguages(request: GetTranslationsRequest) =
 		userRepository.findAllByChatId(request.chatId)

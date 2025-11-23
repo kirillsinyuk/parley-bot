@@ -22,37 +22,36 @@ class LanguageComparatorAdapter(
 		You are a language comparator.
 
 		## OBJECTIVE
-		Determine whether sourceText and targetText are written in the same PRIMARY language.
+		Determine whether the sourceText are PRIMARILY written in the targetLanguage.
 
 		## DEFINITIONS
-		PRIMARY LANGUAGE = the language used for the majority of meaningful words in a text.
+		PRIMARILY = the language used for the majority of meaningful words in a text.
 
 		Mixed-language text is common. English technical terms, code words, proper names, UI labels, or loanwords inside another language do NOT change the primary language.
 
 		Examples:
-		- "выглядит как feature-request" → primary language = Russian
-		- "Install драйвер" → primary language = Russian
-		- "I need to fix комп" → primary language = English
+		- "выглядит как feature-request" → russian
+		- "Install драйвер" → russian
+		- "I need to fix комп" → english
 
 		## RULES
-		1. Identify the primary language of sourceText.
-		2. Identify the primary language of targetText.
-		3. If the primary languages match → output true.
-		4. If they differ → output false.
-		5. Ignore:
+		1. Identify the primary language of the sourceText.
+		2. If the primary language matches targetLanguage → output true.
+		3. If they differ → output false.
+		4. Ignore:
 		   - individual foreign words
 		   - English technical terms widely used in other languages (feature, bug, task, commit, request…)
 		   - code tokens or identifiers
 		   - transliterations
 		   - names, brand names, URLs
-		6. Consider the writing system (script) only as an additional clue, NOT the main rule.
-		7. Output ONLY: true or false. No quotes. No extra text.
+		5. Consider the writing system (script) only as an additional clue, NOT the main rule.
+		6. Output ONLY: true or false. No quotes. No extra text.
 	"""
 
 	@Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
-	override fun haveSameLanguage(sourceText: String, translatedText: String): Boolean {
-		logger.info("Processing text comparison. Source=$sourceText. Target=$translatedText")
-		return mapToObject(openaiClientCall(sourceText, translatedText))
+	override fun haveSameLanguage(sourceText: String, targetLanguage: String): Boolean {
+		logger.info("Processing text comparison. Source=$sourceText. TargetLanguage=$targetLanguage")
+		return mapToObject(openaiClientCall(sourceText, targetLanguage))
 			.also { logger.info { "Comparison result: $it" } }
 	}
 
@@ -69,7 +68,7 @@ class LanguageComparatorAdapter(
 					ResponseInputItem.ofEasyInputMessage(
 						EasyInputMessage.builder()
 							.role(EasyInputMessage.Role.USER)
-							.content("{ sourceText=$sourceText, targetText=$translatedText }")
+							.content("{ sourceText=$sourceText, targetLanguage=$translatedText }")
 							.build()
 					)
 				)
