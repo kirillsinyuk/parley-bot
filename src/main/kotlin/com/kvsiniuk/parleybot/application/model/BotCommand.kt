@@ -10,6 +10,7 @@ enum class BotCommand(
     EXIT("/exit", "Leave translation"),
     FEEDBACK("/feedback"),
     VOICE("/voice"),
+    EXPLAIN("/explain"),
 }
 
 val MENU_COMMANDS = BotCommand.values().map { it.command }
