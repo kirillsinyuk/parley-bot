@@ -15,7 +15,7 @@ class TranslateTextHandler(
 	private val telegramMessagePortOut: TelegramMessagePortOut,
 ) : TelegramUpdateHandler {
 	override fun process(update: TelegramUpdateMessage) {
-        GetTranslationsRequest(update.chatId, update.userId, update.message!!)
+        GetTranslationsRequest(update.chatId, update.userId, update.message!!, update.replyText)
             .let { translationProcessingPortIn.getTranslations(it) }
 			.forEach { message -> telegramMessagePortOut.sendMessage(update.chatId, message) }
 	}
