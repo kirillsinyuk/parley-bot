@@ -17,7 +17,7 @@ class TranslationProcessingService(
 	override fun getTranslations(request: GetTranslationsRequest): List<String> =
 		getChatLanguages(request)
 			.filter { !languageComparator.haveSameLanguage(request.message, it.languageName) }
-			.mapNotNull { getChatLanguages(request.message, it.languageName) }
+			.mapNotNull { translateText(request.message, it.languageName, request.replyTo) }
 
 	private fun getChatLanguages(request: GetTranslationsRequest) =
 		userRepository.findAllByChatId(request.chatId)
@@ -25,9 +25,9 @@ class TranslationProcessingService(
 			.map { it.language }
 			.distinct()
 
-	private fun getChatLanguages(message: String, language: String) =
+	private fun translateText(message: String, language: String, replyTo: String?) =
 		try {
-			translateService.translate(message, language)
+			translateService.translate(message, language, replyTo)
 		} catch (e: RuntimeException) {
 			logger.error("Error during translation to $language: $message", e)
 			null
