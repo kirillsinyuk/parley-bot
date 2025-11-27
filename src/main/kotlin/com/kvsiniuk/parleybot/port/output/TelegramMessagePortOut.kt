@@ -1,4 +1,4 @@
-package com.kvsiniuk.parleybot.port.out
+package com.kvsiniuk.parleybot.port.output
 
 import java.io.File
 

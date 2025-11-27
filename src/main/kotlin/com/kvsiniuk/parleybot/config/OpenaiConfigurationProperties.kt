@@ -4,6 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 
 @ConfigurationProperties(prefix = "open-ai")
 data class OpenaiConfigurationProperties(
-	val host: String,
-	val apiKey: String,
+    val host: String,
+    val apiKey: String,
 )

@@ -9,5 +9,5 @@ import org.springframework.boot.runApplication
 class ParleyBotApplication
 
 fun main(args: Array<String>) {
-	runApplication<ParleyBotApplication>(*args)
+    runApplication<ParleyBotApplication>(*args)
 }

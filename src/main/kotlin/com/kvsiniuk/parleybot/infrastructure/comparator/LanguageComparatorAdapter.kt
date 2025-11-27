@@ -1,7 +1,7 @@
 package com.kvsiniuk.parleybot.infrastructure.comparator
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.kvsiniuk.parleybot.port.out.LanguageComparatorPortOut
+import com.kvsiniuk.parleybot.port.output.LanguageComparatorPortOut
 import com.openai.client.OpenAIClient
 import com.openai.models.ChatModel
 import com.openai.models.responses.EasyInputMessage
@@ -14,11 +14,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class LanguageComparatorAdapter(
-	private val openaiClient: OpenAIClient,
-	private val objectMapper: ObjectMapper,
+    private val openaiClient: OpenAIClient,
+    private val objectMapper: ObjectMapper,
 ) : LanguageComparatorPortOut {
-
-	private final val SYSTEM_PROMPT = """
+    private final val systemPrompt = """
 		You are a language comparator.
 
 		## OBJECTIVE
@@ -48,49 +47,57 @@ class LanguageComparatorAdapter(
 		6. Output ONLY: true or false. No quotes. No extra text.
 	"""
 
-	@Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
-	override fun haveSameLanguage(sourceText: String, targetLanguage: String): Boolean {
-		logger.info("Processing text comparison. Source=$sourceText. TargetLanguage=$targetLanguage")
-		return mapToObject(openaiClientCall(sourceText, targetLanguage))
-			.also { logger.info { "Comparison result: $it" } }
-	}
+    @Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
+    override fun haveSameLanguage(
+        sourceText: String,
+        targetLanguage: String,
+    ): Boolean {
+        logger.info("Processing text comparison. Source=$sourceText. TargetLanguage=$targetLanguage")
+        return mapToObject(openaiClientCall(sourceText, targetLanguage))
+            .also { logger.info { "Comparison result: $it" } }
+    }
 
-	private fun openaiClientCall(sourceText: String, translatedText: String): String {
-		val params = ResponseCreateParams.builder()
-			.inputOfResponse(
-				listOf(
-					ResponseInputItem.ofEasyInputMessage(
-						EasyInputMessage.builder()
-							.role(EasyInputMessage.Role.SYSTEM)
-							.content(SYSTEM_PROMPT)
-							.build()
-					),
-					ResponseInputItem.ofEasyInputMessage(
-						EasyInputMessage.builder()
-							.role(EasyInputMessage.Role.USER)
-							.content("{ sourceText=$sourceText, targetLanguage=$translatedText }")
-							.build()
-					)
-				)
-			)
-			.model(ChatModel.GPT_5_NANO)
-			.build()
-		return openaiClient.responses().create(params)
-			.output()
-			.first { it.isMessage() }
-			.asMessage()
-			.content()
-			.first { it.isOutputText() }
-			.asOutputText()
-			.text()
-	}
+    private fun openaiClientCall(
+        sourceText: String,
+        translatedText: String,
+    ): String {
+        val params =
+            ResponseCreateParams.builder()
+                .inputOfResponse(
+                    listOf(
+                        ResponseInputItem.ofEasyInputMessage(
+                            EasyInputMessage.builder()
+                                .role(EasyInputMessage.Role.SYSTEM)
+                                .content(systemPrompt)
+                                .build(),
+                        ),
+                        ResponseInputItem.ofEasyInputMessage(
+                            EasyInputMessage.builder()
+                                .role(EasyInputMessage.Role.USER)
+                                .content("{ sourceText=$sourceText, targetLanguage=$translatedText }")
+                                .build(),
+                        ),
+                    ),
+                )
+                .model(ChatModel.GPT_5_NANO)
+                .build()
+        return openaiClient.responses().create(params)
+            .output()
+            .first { it.isMessage() }
+            .asMessage()
+            .content()
+            .first { it.isOutputText() }
+            .asOutputText()
+            .text()
+    }
 
-	private fun mapToObject(rawResult: String): Boolean = try {
-		objectMapper.readValue(rawResult, Boolean::class.java)
-	} catch (e: RuntimeException) {
-		logger.error { "Exception during parsing comparison result: $rawResult" }
-		false
-	}
+    private fun mapToObject(rawResult: String): Boolean =
+        try {
+            objectMapper.readValue(rawResult, Boolean::class.java)
+        } catch (e: RuntimeException) {
+            logger.error { "Exception during parsing comparison result: $rawResult" }
+            false
+        }
 
-	companion object : KLogging()
+    companion object : KLogging()
 }

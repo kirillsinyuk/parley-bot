@@ -5,5 +5,5 @@ data class TelegramUpdateMessage(
     val replyText: String? = null,
     val chatId: Long = 0,
     val userId: Long = 0,
-    val userLeftGroup: Boolean = false
+    val userLeftGroup: Boolean = false,
 )

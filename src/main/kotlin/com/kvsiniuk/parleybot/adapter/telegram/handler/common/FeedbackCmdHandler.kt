@@ -4,7 +4,7 @@ import com.kvsiniuk.parleybot.adapter.telegram.handler.TelegramUpdateHandler
 import com.kvsiniuk.parleybot.application.model.BotCommand
 import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
 import com.kvsiniuk.parleybot.config.AdminConfigurationProperties
-import com.kvsiniuk.parleybot.port.out.TelegramMessagePortOut
+import com.kvsiniuk.parleybot.port.output.TelegramMessagePortOut
 import mu.KLogging
 import org.springframework.stereotype.Component
 
@@ -20,8 +20,7 @@ class FeedbackCmdHandler(
         telegramMessagePort.sendMessageByCode(update.chatId, "command.feedback.response")
     }
 
-    override fun canApply(update: TelegramUpdateMessage) =
-        update.message?.startsWith(BotCommand.FEEDBACK.command) ?: false
+    override fun canApply(update: TelegramUpdateMessage) = update.message?.startsWith(BotCommand.FEEDBACK.command) ?: false
 
     companion object : KLogging()
 }

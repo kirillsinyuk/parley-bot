@@ -5,9 +5,9 @@ import com.kvsiniuk.parleybot.application.model.BotCommand
 import com.kvsiniuk.parleybot.application.model.Language
 import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
 import com.kvsiniuk.parleybot.application.model.stringToEnum
-import com.kvsiniuk.parleybot.port.`in`.SetUserChatLanguagePortIn
-import com.kvsiniuk.parleybot.port.`in`.model.SetLanguageRequest
-import com.kvsiniuk.parleybot.port.out.TelegramMessagePortOut
+import com.kvsiniuk.parleybot.port.input.SetUserChatLanguagePortIn
+import com.kvsiniuk.parleybot.port.input.model.SetLanguageRequest
+import com.kvsiniuk.parleybot.port.output.TelegramMessagePortOut
 import org.springframework.stereotype.Component
 
 @Component
@@ -26,6 +26,5 @@ class SetLanguageCmdHandler(
         }
     }
 
-    override fun canApply(update: TelegramUpdateMessage) =
-        update.message?.startsWith(BotCommand.SET_LANG.command) ?: false
+    override fun canApply(update: TelegramUpdateMessage) = update.message?.startsWith(BotCommand.SET_LANG.command) ?: false
 }
