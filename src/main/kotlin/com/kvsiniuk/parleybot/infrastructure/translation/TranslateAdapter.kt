@@ -1,6 +1,6 @@
 package com.kvsiniuk.parleybot.infrastructure.translation
 
-import com.kvsiniuk.parleybot.port.out.TranslationPortOut
+import com.kvsiniuk.parleybot.port.output.TranslationPortOut
 import com.openai.client.OpenAIClient
 import com.openai.models.ChatModel
 import com.openai.models.responses.EasyInputMessage
@@ -13,10 +13,9 @@ import org.springframework.stereotype.Component
 
 @Component
 class TranslateAdapter(
-	private val openaiClient: OpenAIClient,
+    private val openaiClient: OpenAIClient,
 ) : TranslationPortOut {
-
-	private final val SYSTEM_PROMPT = """
+    private final val systemPrompt = """
 		You are a multilingual translation engine.
 
 		## OBJECTIVE
@@ -36,42 +35,51 @@ class TranslateAdapter(
 		6. No explanations, no extra fields, no surrounding text.
 	"""
 
-	@Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
-	override fun translate(text: String, language: String, context: String?): String? {
-		logger.info("Processing translation to $language: $text. Context: $context")
-		return openaiClientCall(text, language, context)
-			.also { logger.info { "Translation result: $it" } }
-	}
+    @Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
+    override fun translate(
+        text: String,
+        language: String,
+        context: String?,
+    ): String? {
+        logger.info("Processing translation to $language: $text. Context: $context")
+        return openaiClientCall(text, language, context)
+            .also { logger.info { "Translation result: $it" } }
+    }
 
-	private fun openaiClientCall(message: String, language: String, context: String?): String {
-		val params = ResponseCreateParams.builder()
-			.inputOfResponse(
-				listOf(
-					ResponseInputItem.ofEasyInputMessage(
-						EasyInputMessage.builder()
-							.role(EasyInputMessage.Role.SYSTEM)
-							.content(SYSTEM_PROMPT)
-							.build()
-					),
-					ResponseInputItem.ofEasyInputMessage(
-						EasyInputMessage.builder()
-							.role(EasyInputMessage.Role.USER)
-							.content("targetLanguage=$language; context=$context; message=$message")
-							.build()
-					)
-				)
-			)
-			.model(ChatModel.GPT_5_NANO)
-			.build()
-		return openaiClient.responses().create(params)
-			.output()
-			.first { it.isMessage() }
-			.asMessage()
-			.content()
-			.first { it.isOutputText() }
-			.asOutputText()
-			.text()
-	}
+    private fun openaiClientCall(
+        message: String,
+        language: String,
+        context: String?,
+    ): String {
+        val params =
+            ResponseCreateParams.builder()
+                .inputOfResponse(
+                    listOf(
+                        ResponseInputItem.ofEasyInputMessage(
+                            EasyInputMessage.builder()
+                                .role(EasyInputMessage.Role.SYSTEM)
+                                .content(systemPrompt)
+                                .build(),
+                        ),
+                        ResponseInputItem.ofEasyInputMessage(
+                            EasyInputMessage.builder()
+                                .role(EasyInputMessage.Role.USER)
+                                .content("targetLanguage=$language; context=$context; message=$message")
+                                .build(),
+                        ),
+                    ),
+                )
+                .model(ChatModel.GPT_5_NANO)
+                .build()
+        return openaiClient.responses().create(params)
+            .output()
+            .first { it.isMessage() }
+            .asMessage()
+            .content()
+            .first { it.isOutputText() }
+            .asOutputText()
+            .text()
+    }
 
-	companion object : KLogging()
+    companion object : KLogging()
 }

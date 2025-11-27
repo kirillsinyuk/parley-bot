@@ -6,11 +6,9 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class TranslateConfig {
-
-	@Bean
-	fun openaiClient(openaiConfigurationProperties: OpenaiConfigurationProperties) =
-		OpenAIOkHttpClient.builder()
-			.apiKey(openaiConfigurationProperties.apiKey)
-			.build()
-
+    @Bean
+    fun openaiClient(openaiConfigurationProperties: OpenaiConfigurationProperties) =
+        OpenAIOkHttpClient.builder()
+            .apiKey(openaiConfigurationProperties.apiKey)
+            .build()
 }

@@ -7,12 +7,12 @@ import org.mapstruct.Mapper
 
 @Mapper(config = MapstructConfig::class)
 abstract class TelegramUpdateMessageMapper {
-	fun toMessage(update: Update) =
-		TelegramUpdateMessage(
-			message = update.message()?.text(),
-			replyText = update.message()?.replyToMessage()?.text(),
-			chatId = update.message()?.chat()?.id() ?: 0,
-			userId = update.message()?.from()?.id() ?: update.message()?.leftChatMember()?.id() ?: 0,
-			userLeftGroup = update.message()?.leftChatMember()?.id() != null
-		)
+    fun toMessage(update: Update) =
+        TelegramUpdateMessage(
+            message = update.message()?.text(),
+            replyText = update.message()?.replyToMessage()?.text(),
+            chatId = update.message()?.chat()?.id() ?: 0,
+            userId = update.message()?.from()?.id() ?: update.message()?.leftChatMember()?.id() ?: 0,
+            userLeftGroup = update.message()?.leftChatMember()?.id() != null,
+        )
 }

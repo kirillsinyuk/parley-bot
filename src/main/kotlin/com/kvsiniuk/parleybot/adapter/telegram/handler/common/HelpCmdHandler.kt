@@ -3,7 +3,7 @@ package com.kvsiniuk.parleybot.adapter.telegram.handler.common
 import com.kvsiniuk.parleybot.adapter.telegram.handler.TelegramUpdateHandler
 import com.kvsiniuk.parleybot.application.model.BotCommand
 import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
-import com.kvsiniuk.parleybot.port.out.TelegramMessagePortOut
+import com.kvsiniuk.parleybot.port.output.TelegramMessagePortOut
 import org.springframework.stereotype.Component
 
 @Component

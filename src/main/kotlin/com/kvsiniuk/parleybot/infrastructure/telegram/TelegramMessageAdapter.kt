@@ -1,21 +1,20 @@
 package com.kvsiniuk.parleybot.infrastructure.telegram
 
-import com.kvsiniuk.parleybot.port.out.MessageSourcePortOut
-import com.kvsiniuk.parleybot.port.out.TelegramMessagePortOut
+import com.kvsiniuk.parleybot.port.output.MessageSourcePortOut
+import com.kvsiniuk.parleybot.port.output.TelegramMessagePortOut
 import com.pengrad.telegrambot.TelegramBot
 import com.pengrad.telegrambot.model.request.ParseMode
 import com.pengrad.telegrambot.request.SendMessage
 import com.pengrad.telegrambot.request.SendVoice
+import org.springframework.stereotype.Component
 import java.io.File
 import java.nio.file.Files
-import org.springframework.stereotype.Component
 
 @Component
 class TelegramMessageAdapter(
     private val bot: TelegramBot,
     private val messagePort: MessageSourcePortOut,
 ) : TelegramMessagePortOut {
-
     override fun sendMessageByCode(
         chatId: Long,
         msgCode: String,
@@ -33,14 +32,16 @@ class TelegramMessageAdapter(
             .let { bot.execute(it) }
     }
 
-    override fun sendVoice(chatId: Long, voice: File) {
+    override fun sendVoice(
+        chatId: Long,
+        voice: File,
+    ) {
         try {
             mapVoice(chatId, voice)
                 .let { bot.execute(it) }
         } finally {
             Files.deleteIfExists(voice.toPath())
         }
-
     }
 
     private fun mapVoice(
