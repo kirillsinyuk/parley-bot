@@ -16,7 +16,7 @@ class ExplainCmdHandler(
     override fun process(update: TelegramUpdateMessage) {
         update.replyText
             ?.takeIf { StringUtils.isNotBlank(it) }
-            ?.let { explainMessagePort.getExplanation(it, update.userId) }
+            ?.let { explainMessagePort.getExplanation(it, update.userId, update.language ?: "en") }
             ?.also { telegramMessagePort.sendMessage(update.chatId, it) }
             ?: telegramMessagePort.sendMessageByCode(update.chatId, "command.explain.no-text-response")
     }
