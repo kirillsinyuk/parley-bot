@@ -23,11 +23,11 @@ open class User(
     @Enumerated(EnumType.STRING)
     var language: Language = Language.EN,
     @Version
-    var version: Long,
+    var version: Long = 0,
     @CreatedDate
-    var createdDate: LocalDateTime,
+    var createdDate: LocalDateTime = LocalDateTime.now(),
     @LastModifiedDate
-    var updatedDate: LocalDateTime,
+    var updatedDate: LocalDateTime = LocalDateTime.now(),
 ) {
     // Hibernate requires a no-arg constructor
     protected constructor() : this(
