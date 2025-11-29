@@ -1,7 +1,7 @@
 package com.kvsiniuk.parleybot.port.input
 
-import com.kvsiniuk.parleybot.port.input.model.SetLanguageRequest
+import com.kvsiniuk.parleybot.port.input.model.SetLanguagesRequest
 
 interface SetUserChatLanguagePortIn {
-    fun setLanguage(request: SetLanguageRequest)
+    fun setLanguages(request: SetLanguagesRequest)
 }

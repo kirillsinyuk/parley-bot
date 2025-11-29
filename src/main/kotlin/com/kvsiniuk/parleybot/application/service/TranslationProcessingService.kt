@@ -1,6 +1,6 @@
 package com.kvsiniuk.parleybot.application.service
 
-import com.kvsiniuk.parleybot.infrastructure.database.UserRepository
+import com.kvsiniuk.parleybot.infrastructure.database.UserChatRepository
 import com.kvsiniuk.parleybot.port.input.TranslationProcessingPortIn
 import com.kvsiniuk.parleybot.port.input.model.GetTranslationsRequest
 import com.kvsiniuk.parleybot.port.output.LanguageComparatorPortOut
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class TranslationProcessingService(
-    private val userRepository: UserRepository,
+    private val userChatRepository: UserChatRepository,
     private val translateService: TranslationPortOut,
     private val languageComparator: LanguageComparatorPortOut,
 ) : TranslationProcessingPortIn {
@@ -20,9 +20,9 @@ class TranslationProcessingService(
             .mapNotNull { translateText(request.message, it.languageName, request.replyTo) }
 
     private fun getChatLanguages(request: GetTranslationsRequest) =
-        userRepository.findAllByChatId(request.chatId)
+        userChatRepository.findAllByChatId(request.chatId)
             .filter { it.userId != request.userId }
-            .map { it.language }
+            .flatMap { it.languages }
             .distinct()
 
     private fun translateText(
