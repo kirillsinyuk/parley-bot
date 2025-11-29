@@ -1,18 +1,18 @@
-package com.kvsiniuk.parleybot.adapter.telegram.handler.common
+package com.kvsiniuk.parleybot.adapter.telegram.handler.settings
 
 import com.kvsiniuk.parleybot.adapter.telegram.handler.TelegramUpdateHandler
 import com.kvsiniuk.parleybot.application.model.BotCommand
 import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
-import com.kvsiniuk.parleybot.port.input.DeleteUserPortIn
-import com.kvsiniuk.parleybot.port.input.model.DeleteUserRequest
+import com.kvsiniuk.parleybot.port.input.DeleteUserChatPortIn
+import com.kvsiniuk.parleybot.port.input.model.DeleteUserChatRequest
 import org.springframework.stereotype.Component
 
 @Component
 class UserLeftGroupHandler(
-    private val deleteUserPortIn: DeleteUserPortIn,
+    private val deleteUserChatPortIn: DeleteUserChatPortIn,
 ) : TelegramUpdateHandler {
     override fun process(update: TelegramUpdateMessage) {
-        deleteUserPortIn.deleteUser(DeleteUserRequest(update.userId))
+        deleteUserChatPortIn.deleteUserChat(DeleteUserChatRequest(update.userId))
     }
 
     override fun canApply(update: TelegramUpdateMessage) =

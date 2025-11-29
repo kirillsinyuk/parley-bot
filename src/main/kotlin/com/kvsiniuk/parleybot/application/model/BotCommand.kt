@@ -6,7 +6,7 @@ enum class BotCommand(
 ) {
     START("/start"),
     HELP("/help"),
-    SET_LANG("/set_lang", "Set language"),
+    SET_LANG("/lang", "Set language"),
     EXIT("/exit", "Leave translation"),
     FEEDBACK("/feedback"),
     VOICE("/voice"),

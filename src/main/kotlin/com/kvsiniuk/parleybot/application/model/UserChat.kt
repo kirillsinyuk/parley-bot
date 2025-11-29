@@ -1,5 +1,8 @@
 package com.kvsiniuk.parleybot.application.model
 
+import com.kvsiniuk.parleybot.infrastructure.database.converter.LanguageListConverter
+import jakarta.persistence.Column
+import jakarta.persistence.Convert
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.Id
@@ -12,31 +15,20 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
-@Table(name = "user")
+@Table(name = "user_chat")
 @EntityListeners(AuditingEntityListener::class)
-class User(
+class UserChat(
     @Id
     var id: String = UUID.randomUUID().toString(),
     var userId: Long = 0,
-    var messageCount: Long = 0,
-    var voiceCount: Long = 0,
-    var explainCount: Long = 0,
-    @Version
-    var version: Long? = null,
+    var chatId: Long = 0,
+    @Convert(converter = LanguageListConverter::class)
+    @Column(name = "languages", columnDefinition = "TEXT")
+    var languages: Set<Language> = setOf(Language.EN),
     @CreatedDate
     var createdDate: LocalDateTime? = null,
     @LastModifiedDate
     var updatedDate: LocalDateTime? = null,
-) {
-    fun incMessageCount() {
-        messageCount = messageCount.inc()
-    }
-
-    fun incVoiceCount() {
-        voiceCount = voiceCount.inc()
-    }
-
-    fun incExplainCount() {
-        explainCount = explainCount.inc()
-    }
-}
+    @Version
+    var version: Long? = null,
+)

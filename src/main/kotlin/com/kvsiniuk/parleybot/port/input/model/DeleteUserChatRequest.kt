@@ -1,5 +1,5 @@
 package com.kvsiniuk.parleybot.port.input.model
 
-data class DeleteUserRequest(
+data class DeleteUserChatRequest(
     val userId: Long,
 )

@@ -14,5 +14,5 @@ class StartCmdHandler(
         telegramMessagePort.sendMessageByCode(update.chatId, "command.start.response")
     }
 
-    override fun canApply(update: TelegramUpdateMessage) = update.message == BotCommand.START.command
+    override fun canApply(update: TelegramUpdateMessage) = update.message?.startsWith(BotCommand.START.command) ?: false
 }
