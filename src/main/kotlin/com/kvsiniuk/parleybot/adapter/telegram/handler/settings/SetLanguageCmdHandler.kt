@@ -21,7 +21,7 @@ class SetLanguageCmdHandler(
             setLanguagePortIn.setLanguages(SetLanguagesRequest(update.chatId, update.userId, languages))
             telegramMessagePort.sendMessageByCode(update.chatId, "command.set_lang.response")
         } else {
-            telegramMessagePort.sendMessageByCode(update.chatId, "Couldn't set language. Valid values: ${Language.values()}")
+            telegramMessagePort.sendMessage(update.chatId, "Couldn't set language. Valid values: ${Language.values()}")
         }
     }
 
@@ -29,7 +29,7 @@ class SetLanguageCmdHandler(
         return message
             .replace(BotCommand.SET_LANG.command, "")
             .split(",")
-            .mapNotNull { str -> stringToEnum(str.trim()) }
+            .mapNotNull { str -> stringToEnum(str.uppercase().trim()) }
             .toSet()
     }
 
