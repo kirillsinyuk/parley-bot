@@ -20,6 +20,7 @@ class TranslateAdapter(
 
         Translate the message into the language set in targetLanguage.
         If context is provided, use it naturally to improve the translation.
+        If the language matches the text, don't translate or change the original message.
         
         Keep the tone, meaning, and style.
         Fix only clear typos.
