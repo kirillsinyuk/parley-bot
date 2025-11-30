@@ -1,8 +1,8 @@
 package com.kvsiniuk.parleybot.port.output
 
 interface LanguageComparatorPortOut {
-    fun haveSameLanguage(
+    fun wasTranslated(
         sourceText: String,
-        targetLanguage: String,
+        targetText: String,
     ): Boolean
 }

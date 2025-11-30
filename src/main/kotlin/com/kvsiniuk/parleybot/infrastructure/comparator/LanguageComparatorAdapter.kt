@@ -1,103 +1,91 @@
 package com.kvsiniuk.parleybot.infrastructure.comparator
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.kvsiniuk.parleybot.port.output.LanguageComparatorPortOut
-import com.openai.client.OpenAIClient
-import com.openai.models.ChatModel
-import com.openai.models.responses.EasyInputMessage
-import com.openai.models.responses.ResponseCreateParams
-import com.openai.models.responses.ResponseInputItem
 import mu.KLogging
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import java.text.Normalizer
+import kotlin.math.sqrt
 
 @Component
-class LanguageComparatorAdapter(
-    private val openaiClient: OpenAIClient,
-    private val objectMapper: ObjectMapper,
-) : LanguageComparatorPortOut {
-    private final val systemPrompt = """
-		You are a language comparator.
-
-		## OBJECTIVE
-		Determine whether the sourceText are PRIMARILY written in the targetLanguage.
-
-		## DEFINITIONS
-		PRIMARILY = the language used for the majority of meaningful words in a text.
-
-		Mixed-language text is common. English technical terms, code words, proper names, UI labels, or loanwords inside another language do NOT change the primary language.
-
-		Examples:
-		- "выглядит как feature-request" → russian
-		- "Install драйвер" → russian
-		- "I need to fix комп" → english
-
-		## RULES
-		1. Identify the primary language of the sourceText.
-		2. If the primary language matches targetLanguage → output true.
-		3. If they differ → output false.
-		4. Ignore:
-		   - individual foreign words
-		   - English technical terms widely used in other languages (feature, bug, task, commit, request…)
-		   - code tokens or identifiers
-		   - transliterations
-		   - names, brand names, URLs
-		5. Consider the writing system (script) only as an additional clue, NOT the main rule.
-		6. Output ONLY: true or false. No quotes. No extra text.
-	"""
-
+class LanguageComparatorAdapter : LanguageComparatorPortOut {
     @Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
-    override fun haveSameLanguage(
+    override fun wasTranslated(
         sourceText: String,
-        targetLanguage: String,
+        targetText: String,
     ): Boolean {
-        logger.info("Processing text comparison. Source=$sourceText. TargetLanguage=$targetLanguage")
-        return mapToObject(openaiClientCall(sourceText, targetLanguage))
-            .also { logger.info { "Comparison result: $it" } }
-    }
-
-    private fun openaiClientCall(
-        sourceText: String,
-        translatedText: String,
-    ): String {
-        val params =
-            ResponseCreateParams.builder()
-                .inputOfResponse(
-                    listOf(
-                        ResponseInputItem.ofEasyInputMessage(
-                            EasyInputMessage.builder()
-                                .role(EasyInputMessage.Role.SYSTEM)
-                                .content(systemPrompt)
-                                .build(),
-                        ),
-                        ResponseInputItem.ofEasyInputMessage(
-                            EasyInputMessage.builder()
-                                .role(EasyInputMessage.Role.USER)
-                                .content("{ sourceText=$sourceText, targetLanguage=$translatedText }")
-                                .build(),
-                        ),
-                    ),
-                )
-                .model(ChatModel.GPT_5_NANO)
-                .build()
-        return openaiClient.responses().create(params)
-            .output()
-            .first { it.isMessage() }
-            .asMessage()
-            .content()
-            .first { it.isOutputText() }
-            .asOutputText()
-            .text()
-    }
-
-    private fun mapToObject(rawResult: String): Boolean =
-        try {
-            objectMapper.readValue(rawResult, Boolean::class.java)
-        } catch (e: RuntimeException) {
-            logger.error { "Exception during parsing comparison result: $rawResult" }
-            false
+        logger.info("Processing text comparison. Source=$sourceText. TargetText=$targetText")
+        // Fast script check. 0-127 - ASCII characters
+        if (sourceText.any { it.code > 127 } != targetText.any { it.code > 127 }) {
+            return true
         }
+
+        val sourceTokens = normalize(sourceText)
+        val targetTokens = normalize(targetText)
+
+        // Computes a word intersection rate
+        val overlap = tokenOverlap(sourceTokens, targetTokens)
+
+        // Computes a cosine similarity between character–frequency vectors of the source and translated texts
+        // 1.0 -> perfect match
+        // 0.9–0.7 -> likely same language
+        val charSim =
+            cosineSim(
+                charDistribution(sourceText.lowercase()),
+                charDistribution(targetText.lowercase()),
+            )
+
+        // Very rough shape metric: average token length
+        val shapeA = sourceTokens.map { it.length }.average()
+        val shapeB = targetTokens.map { it.length }.average()
+        val shapeSim = 1.0 - (kotlin.math.abs(shapeA - shapeB) / 10.0)
+
+        return !(overlap > 0.25 || (charSim > 0.85 && shapeSim > 0.85))
+    }
+
+    fun normalize(text: String): List<String> =
+        Normalizer.normalize(text.lowercase(), Normalizer.Form.NFD)
+            .replace("\\p{M}".toRegex(), "") // remove diacritics
+            .replace("[^\\p{L}\\p{Nd} ]+".toRegex(), " ") // keep only letters/digits
+            .split(" ")
+            .filter { it.length >= 3 }
+
+    fun tokenOverlap(
+        a: List<String>,
+        b: List<String>,
+    ): Double {
+        if (a.isEmpty() || b.isEmpty()) return 0.0
+        val setA = a.toSet()
+        val setB = b.toSet()
+        val intersection = setA.intersect(setB).size
+        val union = setA.union(setB).size
+        return intersection.toDouble() / union
+    }
+
+    fun charDistribution(text: String): Map<Char, Int> =
+        text.filter { it.isLetter() }
+            .groupingBy { it }
+            .eachCount()
+
+    fun cosineSim(
+        a: Map<Char, Int>,
+        b: Map<Char, Int>,
+    ): Double {
+        val keys = a.keys + b.keys
+        var dot = 0.0
+        var normA = 0.0
+        var normB = 0.0
+
+        for (k in keys) {
+            val x = a[k]?.toDouble() ?: 0.0
+            val y = b[k]?.toDouble() ?: 0.0
+            dot += x * y
+            normA += x * x
+            normB += y * y
+        }
+        return if (normA == 0.0 || normB == 0.0) 0.0 else dot / (sqrt(normA) * sqrt(normB))
+    }
 
     companion object : KLogging()
 }
