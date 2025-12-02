@@ -7,4 +7,5 @@ data class TelegramUpdateMessage(
     val userId: Long = 0,
     val userLeftGroup: Boolean = false,
     val language: String?,
+    val voiceFileId: String?,
 )
