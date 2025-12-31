@@ -17,7 +17,6 @@ class VoiceCmdHandler(
 ) : TelegramUpdateHandler {
     override fun process(update: TelegramUpdateMessage) {
         update.replyText
-            ?.substring(0..400)
             ?.takeIf { StringUtils.isNotBlank(it) }
             ?.let { textToSpeechPort.translateToVoice(it) }
             ?.also { telegramMessagePort.sendVoice(update.chatId, it) }
