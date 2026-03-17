@@ -15,8 +15,9 @@ class LanguageComparatorAdapter : LanguageComparatorPortOut {
         sourceText: String,
         targetText: String,
     ): Boolean {
-        logger.info("Processing text comparison. Source=$sourceText. TargetText=$targetText")
-        // Fast script check. 0-127 - ASCII characters
+        logger.debug("Processing text comparison. Source=$sourceText. TargetText=$targetText")
+        // Fast script check: if one text uses non-ASCII characters and the other doesn't,
+        // they are definitely in different scripts → translation occurred.
         if (sourceText.any { it.code > 127 } != targetText.any { it.code > 127 }) {
             return true
         }
@@ -24,34 +25,39 @@ class LanguageComparatorAdapter : LanguageComparatorPortOut {
         val sourceTokens = normalize(sourceText)
         val targetTokens = normalize(targetText)
 
-        // Computes a word intersection rate
+        // Jaccard overlap of word tokens. High overlap means the same words appear in both
+        // texts — i.e. the text was not meaningfully changed by translation.
         val overlap = tokenOverlap(sourceTokens, targetTokens)
 
-        // Computes a cosine similarity between character–frequency vectors of the source and translated texts
-        // 1.0 -> perfect match
-        // 0.9–0.7 -> likely same language
+        // Cosine similarity between character-frequency vectors.
+        // Values close to 1.0 indicate the same character distribution (same language).
         val charSim =
             cosineSim(
                 charDistribution(sourceText.lowercase()),
                 charDistribution(targetText.lowercase()),
             )
 
-        // Very rough shape metric: average token length
+        // Average token length as a rough proxy for script/language family.
+        // Languages like German or Finnish have longer average words than English or Chinese.
         val shapeA = sourceTokens.map { it.length }.average()
         val shapeB = targetTokens.map { it.length }.average()
         val shapeSim = 1.0 - (kotlin.math.abs(shapeA - shapeB) / 10.0)
 
-        return !(overlap > 0.25 || (charSim > 0.85 && shapeSim > 0.85))
+        // A translation is considered NOT to have occurred when:
+        //   - too many of the same tokens appear in both texts (OVERLAP_THRESHOLD), OR
+        //   - both character distribution and word-shape are nearly identical
+        //     (CHAR_SIM_THRESHOLD and SHAPE_SIM_THRESHOLD).
+        return !(overlap > OVERLAP_THRESHOLD || (charSim > CHAR_SIM_THRESHOLD && shapeSim > SHAPE_SIM_THRESHOLD))
     }
 
-    fun normalize(text: String): List<String> =
+    private fun normalize(text: String): List<String> =
         Normalizer.normalize(text.lowercase(), Normalizer.Form.NFD)
             .replace("\\p{M}".toRegex(), "") // remove diacritics
             .replace("[^\\p{L}\\p{Nd} ]+".toRegex(), " ") // keep only letters/digits
             .split(" ")
             .filter { it.length >= 3 }
 
-    fun tokenOverlap(
+    private fun tokenOverlap(
         a: List<String>,
         b: List<String>,
     ): Double {
@@ -63,12 +69,12 @@ class LanguageComparatorAdapter : LanguageComparatorPortOut {
         return intersection.toDouble() / union
     }
 
-    fun charDistribution(text: String): Map<Char, Int> =
+    private fun charDistribution(text: String): Map<Char, Int> =
         text.filter { it.isLetter() }
             .groupingBy { it }
             .eachCount()
 
-    fun cosineSim(
+    private fun cosineSim(
         a: Map<Char, Int>,
         b: Map<Char, Int>,
     ): Double {
@@ -87,5 +93,14 @@ class LanguageComparatorAdapter : LanguageComparatorPortOut {
         return if (normA == 0.0 || normB == 0.0) 0.0 else dot / (sqrt(normA) * sqrt(normB))
     }
 
-    companion object : KLogging()
+    companion object : KLogging() {
+        /** Jaccard token overlap above this value means too many shared words → not translated. */
+        private const val OVERLAP_THRESHOLD = 0.25
+
+        /** Cosine similarity of character distributions above this value suggests same language. */
+        private const val CHAR_SIM_THRESHOLD = 0.85
+
+        /** Average token-length similarity above this value suggests same language family. */
+        private const val SHAPE_SIM_THRESHOLD = 0.85
+    }
 }

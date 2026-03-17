@@ -19,16 +19,20 @@ class SpeechToTextAdapter(
 
     private fun openaiClientCall(file: ByteArray): String? {
         val tempFile = Files.createTempFile("voice", ".ogg")
-        Files.write(tempFile, file)
-        var param =
-            TranscriptionCreateParams.builder()
-                .file(tempFile)
-                .model(AudioModel.GPT_4O_MINI_TRANSCRIBE)
-                .build()
-        return openaiClient.audio().transcriptions().create(param)
-            .transcription()
-            .map { it.text() }
-            .orElse(null)
+        try {
+            Files.write(tempFile, file)
+            val param =
+                TranscriptionCreateParams.builder()
+                    .file(tempFile)
+                    .model(AudioModel.GPT_4O_MINI_TRANSCRIBE)
+                    .build()
+            return openaiClient.audio().transcriptions().create(param)
+                .transcription()
+                .map { it.text() }
+                .orElse(null)
+        } finally {
+            Files.deleteIfExists(tempFile)
+        }
     }
 
     companion object : KLogging()

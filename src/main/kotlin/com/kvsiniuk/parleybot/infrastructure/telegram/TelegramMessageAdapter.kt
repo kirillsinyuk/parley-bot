@@ -6,6 +6,7 @@ import com.pengrad.telegrambot.TelegramBot
 import com.pengrad.telegrambot.model.request.ParseMode
 import com.pengrad.telegrambot.request.SendMessage
 import com.pengrad.telegrambot.request.SendVoice
+import mu.KLogging
 import org.springframework.stereotype.Component
 import java.io.File
 import java.nio.file.Files
@@ -37,8 +38,10 @@ class TelegramMessageAdapter(
         voice: File,
     ) {
         try {
-            mapVoice(chatId, voice)
-                .let { bot.execute(it) }
+            val response = bot.execute(mapVoice(chatId, voice))
+            if (!response.isOk) {
+                logger.error("Failed to send voice to chat $chatId: ${response.description()}")
+            }
         } finally {
             Files.deleteIfExists(voice.toPath())
         }
@@ -48,6 +51,8 @@ class TelegramMessageAdapter(
         chatId: Long,
         msg: File,
     ) = SendVoice(chatId, msg)
+
+    companion object : KLogging()
 
     private fun mapMessage(
         chatId: Long,

@@ -1,6 +1,6 @@
 package com.kvsiniuk.parleybot.adapter.telegram.handler.text
 
-import com.kvsiniuk.parleybot.adapter.telegram.handler.TelegramUpdateHandler
+import com.kvsiniuk.parleybot.adapter.telegram.handler.AbstractCommandHandler
 import com.kvsiniuk.parleybot.application.model.BotCommand
 import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
 import com.kvsiniuk.parleybot.port.input.UserPortIn
@@ -14,7 +14,7 @@ class VoiceCmdHandler(
     private val textToSpeechPort: TextToSpeechPortOut,
     private val userPortIn: UserPortIn,
     private val telegramMessagePort: TelegramMessagePortOut,
-) : TelegramUpdateHandler {
+) : AbstractCommandHandler(BotCommand.VOICE) {
     override fun process(update: TelegramUpdateMessage) {
         update.replyText
             ?.takeIf { StringUtils.isNotBlank(it) }
@@ -23,6 +23,4 @@ class VoiceCmdHandler(
             ?.also { userPortIn.incUserVoiceCount(update.userId) }
             ?: telegramMessagePort.sendMessageByCode(update.chatId, "command.voice.no-text-response")
     }
-
-    override fun canApply(update: TelegramUpdateMessage) = update.message == BotCommand.VOICE.command
 }

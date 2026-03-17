@@ -1,6 +1,6 @@
 package com.kvsiniuk.parleybot.adapter.telegram.handler.common
 
-import com.kvsiniuk.parleybot.adapter.telegram.handler.TelegramUpdateHandler
+import com.kvsiniuk.parleybot.adapter.telegram.handler.AbstractCommandHandler
 import com.kvsiniuk.parleybot.application.model.BotCommand
 import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
 import com.kvsiniuk.parleybot.port.output.TelegramMessagePortOut
@@ -9,10 +9,8 @@ import org.springframework.stereotype.Component
 @Component
 class HelpCmdHandler(
     private val telegramMessagePort: TelegramMessagePortOut,
-) : TelegramUpdateHandler {
+) : AbstractCommandHandler(BotCommand.HELP) {
     override fun process(update: TelegramUpdateMessage) {
         telegramMessagePort.sendMessageByCode(update.chatId, "command.help.response")
     }
-
-    override fun canApply(update: TelegramUpdateMessage) = update.message?.startsWith(BotCommand.HELP.command) ?: false
 }

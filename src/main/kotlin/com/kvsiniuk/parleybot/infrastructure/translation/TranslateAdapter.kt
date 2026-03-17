@@ -40,9 +40,9 @@ class TranslateAdapter(
         language: String,
         context: String?,
     ): String? {
-        logger.info("Processing translation to $language: $text. Context: $context")
+        logger.debug("Processing translation to $language: $text. Context: $context")
         return openaiClientCall(text, language, context)
-            .also { logger.info { "Translation result: $it" } }
+            .also { logger.debug { "Translation result: $it" } }
     }
 
     private fun openaiClientCall(

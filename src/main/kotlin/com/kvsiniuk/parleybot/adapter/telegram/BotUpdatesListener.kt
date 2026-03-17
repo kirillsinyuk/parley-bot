@@ -22,10 +22,14 @@ class BotUpdatesListener(
 
     override fun process(updates: MutableList<Update>?): Int {
         updates?.forEach { update ->
-            val updateData = telegramUpdateMessageMapper.toMessage(update)
-            logger.debug("Processing update $updateData")
-            telegramUpdateHandlers.filter { it.canApply(updateData) }
-                .forEach { it.process(updateData) }
+            try {
+                val updateData = telegramUpdateMessageMapper.toMessage(update)
+                logger.debug("Processing update $updateData")
+                telegramUpdateHandlers.filter { it.canApply(updateData) }
+                    .forEach { it.process(updateData) }
+            } catch (e: Exception) {
+                logger.error("Failed to process update: $update", e)
+            }
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL
     }
