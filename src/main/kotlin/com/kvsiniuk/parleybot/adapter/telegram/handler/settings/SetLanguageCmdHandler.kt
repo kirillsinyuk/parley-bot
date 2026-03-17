@@ -1,6 +1,6 @@
 package com.kvsiniuk.parleybot.adapter.telegram.handler.settings
 
-import com.kvsiniuk.parleybot.adapter.telegram.handler.TelegramUpdateHandler
+import com.kvsiniuk.parleybot.adapter.telegram.handler.AbstractCommandHandler
 import com.kvsiniuk.parleybot.application.model.BotCommand
 import com.kvsiniuk.parleybot.application.model.Language
 import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
@@ -14,24 +14,21 @@ import org.springframework.stereotype.Component
 class SetLanguageCmdHandler(
     private val telegramMessagePort: TelegramMessagePortOut,
     private val setLanguagePortIn: SetUserChatLanguagePortIn,
-) : TelegramUpdateHandler {
+) : AbstractCommandHandler(BotCommand.SET_LANG) {
     override fun process(update: TelegramUpdateMessage) {
         val languages = getLanguages(update.message!!)
         if (languages.isNotEmpty()) {
             setLanguagePortIn.setLanguages(SetLanguagesRequest(update.chatId, update.userId, languages))
             telegramMessagePort.sendMessageByCode(update.chatId, "command.set_lang.response")
         } else {
-            telegramMessagePort.sendMessage(update.chatId, "Couldn't set language. Valid values: ${Language.values()}")
+            telegramMessagePort.sendMessage(update.chatId, "Couldn't set language. Valid values: ${Language.entries}")
         }
     }
 
-    private fun getLanguages(message: String): Set<Language> {
-        return message
+    private fun getLanguages(message: String): Set<Language> =
+        message
             .replace(BotCommand.SET_LANG.command, "")
             .split(",")
             .mapNotNull { str -> stringToEnum(str.uppercase().trim()) }
             .toSet()
-    }
-
-    override fun canApply(update: TelegramUpdateMessage) = update.message?.startsWith(BotCommand.SET_LANG.command) ?: false
 }

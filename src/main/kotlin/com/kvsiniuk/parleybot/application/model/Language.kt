@@ -11,10 +11,4 @@ enum class Language(val languageName: String) {
     IT("italian"),
 }
 
-fun stringToEnum(input: String): Language? {
-    return try {
-        enumValueOf<Language>(input)
-    } catch (e: IllegalArgumentException) {
-        null
-    }
-}
+fun stringToEnum(input: String): Language? = Language.entries.find { it.name == input }

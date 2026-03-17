@@ -7,16 +7,9 @@ data class Voice(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
-
         other as Voice
-
-        if (fileName != other.fileName) return false
-        if (file.size != other.file.size) return false
-
-        return true
+        return fileName == other.fileName && file.contentEquals(other.file)
     }
 
-    override fun hashCode(): Int {
-        return fileName.hashCode() + file.size
-    }
+    override fun hashCode(): Int = 31 * fileName.hashCode() + file.contentHashCode()
 }

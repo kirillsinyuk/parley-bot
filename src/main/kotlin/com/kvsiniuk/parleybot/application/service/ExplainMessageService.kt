@@ -11,7 +11,6 @@ class ExplainMessageService(
 ) : ExplainMessagePortIn {
     override fun getExplanation(
         text: String,
-        userId: Long,
         userLanguageCode: String,
     ) = explainMessagePort.explainMessage(text, userLanguageCode)
 

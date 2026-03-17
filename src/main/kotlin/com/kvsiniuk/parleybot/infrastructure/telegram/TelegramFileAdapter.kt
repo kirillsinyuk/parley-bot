@@ -12,10 +12,7 @@ class TelegramFileAdapter(
 ) : TelegramFilePortOut {
     override fun getFileContent(fileId: String): Voice {
         val file = bot.execute(GetFile(fileId))
-        val fileName =
-            file.file().filePath()
-                .replaceBeforeLast("/", "")
-                .replace("/", "")
+        val fileName = file.file().filePath().substringAfterLast("/")
         return Voice(bot.getFileContent(file.file()), fileName)
     }
 }

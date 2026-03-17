@@ -23,5 +23,5 @@ CREATE TABLE IF NOT EXISTS user_chat
     version      INTEGER NOT NULL DEFAULT 0
 );
 
-CREATE INDEX IF NOT EXISTS idx_users_chat_id ON user_chat (user_id);
-CREATE INDEX IF NOT EXISTS idx_users_chat_id ON user_chat (chat_id);
+CREATE INDEX IF NOT EXISTS idx_user_chat_user_id ON user_chat (user_id);
+CREATE INDEX IF NOT EXISTS idx_user_chat_chat_id ON user_chat (chat_id);

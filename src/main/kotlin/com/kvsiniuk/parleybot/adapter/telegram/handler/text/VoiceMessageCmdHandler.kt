@@ -17,11 +17,17 @@ class VoiceMessageCmdHandler(
     private val telegramMessagePort: TelegramMessagePortOut,
 ) : TelegramUpdateHandler {
     override fun process(update: TelegramUpdateMessage) {
-        update.voiceFileId!!
-            .let { telegramFilePor.getFileContent(it) }
-            .let { speechToTextPort.translateToText(it.file) }
-            ?.let { translationProcessingPort.getTranslations(GetTranslationsRequest(update.chatId, update.userId, it)) }
-            ?.forEach { telegramMessagePort.sendMessage(update.chatId, it) }
+        val transcribed =
+            update.voiceFileId!!
+                .let { telegramFilePor.getFileContent(it) }
+                .let { speechToTextPort.translateToText(it.file) }
+        if (transcribed == null) {
+            telegramMessagePort.sendMessageByCode(update.chatId, "command.voice.transcription-error")
+            return
+        }
+        translationProcessingPort
+            .getTranslations(GetTranslationsRequest(update.chatId, update.userId, transcribed))
+            .forEach { telegramMessagePort.sendMessage(update.chatId, it) }
     }
 
     override fun canApply(update: TelegramUpdateMessage) = update.voiceFileId != null
