@@ -16,7 +16,5 @@ class UserLeftGroupHandler(
     }
 
     override fun canApply(update: TelegramUpdateMessage) =
-        update.userLeftGroup || update.message?.equals(
-            BotCommand.EXIT.command,
-        ) ?: false
+        update.userLeftGroup || update.message?.equals(BotCommand.EXIT.command) ?: false
 }
