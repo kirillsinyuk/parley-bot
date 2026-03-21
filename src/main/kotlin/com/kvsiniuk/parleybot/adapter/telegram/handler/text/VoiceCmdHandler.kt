@@ -21,6 +21,6 @@ class VoiceCmdHandler(
             ?.let { textToSpeechPort.translateToVoice(it) }
             ?.also { telegramMessagePort.sendVoice(update.chatId, it) }
             ?.also { userPortIn.incUserVoiceCount(update.userId) }
-            ?: telegramMessagePort.sendMessageByCode(update.chatId, "command.voice.no-text-response")
+            ?: telegramMessagePort.sendMessageByCode(update.chatId, "command.voice.no-text-response", update.language ?: "en")
     }
 }

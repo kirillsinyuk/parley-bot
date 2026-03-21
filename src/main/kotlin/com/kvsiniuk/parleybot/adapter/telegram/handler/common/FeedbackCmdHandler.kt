@@ -17,7 +17,7 @@ class FeedbackCmdHandler(
         val feedbackMsg = "A feedback from ${update.userId}, chatId ${update.chatId}: ${update.message}. Reply to: ${update.replyText}"
         telegramMessagePort.sendMessage(adminConfigurationProperties.chatId, feedbackMsg)
             .also { logger.warn { feedbackMsg } }
-        telegramMessagePort.sendMessageByCode(update.chatId, "command.feedback.response")
+        telegramMessagePort.sendMessageByCode(update.chatId, "command.feedback.response", update.language ?: "en")
     }
 
     companion object : KLogging()

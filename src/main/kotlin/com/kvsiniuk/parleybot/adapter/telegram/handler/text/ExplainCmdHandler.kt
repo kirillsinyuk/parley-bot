@@ -21,6 +21,6 @@ class ExplainCmdHandler(
             ?.let { explainMessagePort.getExplanation(it, update.language ?: "en") }
             ?.also { telegramMessagePort.sendMessage(update.chatId, it) }
             ?.also { userPortIn.incUserExplainCount(update.userId) }
-            ?: telegramMessagePort.sendMessageByCode(update.chatId, "command.explain.no-text-response")
+            ?: telegramMessagePort.sendMessageByCode(update.chatId, "command.explain.no-text-response", update.language ?: "en")
     }
 }

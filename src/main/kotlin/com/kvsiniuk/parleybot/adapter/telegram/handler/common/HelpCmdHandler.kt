@@ -11,6 +11,6 @@ class HelpCmdHandler(
     private val telegramMessagePort: TelegramMessagePortOut,
 ) : AbstractCommandHandler(BotCommand.HELP) {
     override fun process(update: TelegramUpdateMessage) {
-        telegramMessagePort.sendMessageByCode(update.chatId, "command.help.response")
+        telegramMessagePort.sendMessageByCode(update.chatId, "command.help.response", update.language ?: "en")
     }
 }

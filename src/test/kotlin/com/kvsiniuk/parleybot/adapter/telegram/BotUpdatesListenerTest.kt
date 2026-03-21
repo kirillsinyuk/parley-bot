@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class BotUpdatesListenerTest {
-
     private val bot = mockk<TelegramBot>(relaxed = true)
     private val mapper = mockk<TelegramUpdateMessageMapper>()
     private val handlerA = mockk<TelegramUpdateHandler>()
@@ -94,6 +93,5 @@ class BotUpdatesListenerTest {
 
     // ── helpers ────────────────────────────────────────────────────────────
 
-    private fun msg(chatId: Long = 1L) =
-        TelegramUpdateMessage(chatId = chatId, userId = 1L, language = null, voiceFileId = null)
+    private fun msg(chatId: Long = 1L) = TelegramUpdateMessage(chatId = chatId, userId = 1L, language = null, voiceFileId = null)
 }

@@ -22,7 +22,7 @@ class VoiceMessageCmdHandler(
                 .let { telegramFilePor.getFileContent(it) }
                 .let { speechToTextPort.translateToText(it.file) }
         if (transcribed == null) {
-            telegramMessagePort.sendMessageByCode(update.chatId, "command.voice.transcription-error")
+            telegramMessagePort.sendMessageByCode(update.chatId, "command.voice.transcription-error", update.language ?: "en")
             return
         }
         translationProcessingPort

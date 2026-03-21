@@ -19,8 +19,9 @@ class TelegramMessageAdapter(
     override fun sendMessageByCode(
         chatId: Long,
         msgCode: String,
+        locale: String,
     ) {
-        val responseMsg = messagePort.getMessage(msgCode)
+        val responseMsg = messagePort.getMessage(msgCode, locale)
         mapMessage(chatId, responseMsg)
             .let { bot.execute(it) }
     }

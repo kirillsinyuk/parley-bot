@@ -26,7 +26,6 @@ import kotlin.test.assertNotNull
     ],
 )
 class SetUserChatLanguageServiceIntegrationTest {
-
     @Autowired
     private lateinit var userChatRepository: UserChatRepository
 

@@ -6,6 +6,7 @@ interface TelegramMessagePortOut {
     fun sendMessageByCode(
         chatId: Long,
         msgCode: String,
+        locale: String,
     )
 
     fun sendMessage(

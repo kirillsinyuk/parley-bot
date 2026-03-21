@@ -13,7 +13,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class TranslationProcessingServiceTest {
-
     private val userChatPortOut = mockk<UserChatPortOut>()
     private val translateService = mockk<TranslationPortOut>()
     private val languageComparator = mockk<LanguageComparatorPortOut>()
@@ -90,8 +89,10 @@ class TranslationProcessingServiceTest {
 
     // ── helpers ────────────────────────────────────────────────────────────
 
-    private fun request(message: String, replyTo: String? = null) =
-        GetTranslationsRequest(chatId = CHAT_ID, userId = SENDER_ID, message = message, replyTo = replyTo)
+    private fun request(
+        message: String,
+        replyTo: String? = null,
+    ) = GetTranslationsRequest(chatId = CHAT_ID, userId = SENDER_ID, message = message, replyTo = replyTo)
 
     companion object {
         private const val CHAT_ID = 100L

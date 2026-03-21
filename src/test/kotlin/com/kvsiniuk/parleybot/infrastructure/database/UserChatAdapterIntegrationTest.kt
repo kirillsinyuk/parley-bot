@@ -24,7 +24,6 @@ import kotlin.test.assertTrue
     ],
 )
 class UserChatAdapterIntegrationTest {
-
     @Autowired
     private lateinit var userChatRepository: UserChatRepository
 
@@ -95,6 +94,9 @@ class UserChatAdapterIntegrationTest {
 
     // ── helpers ────────────────────────────────────────────────────────────
 
-    private fun save(userId: Long, chatId: Long, languages: Set<Language>) =
-        userChatRepository.save(UserChat(userId = userId, chatId = chatId, languages = languages))
+    private fun save(
+        userId: Long,
+        chatId: Long,
+        languages: Set<Language>,
+    ) = userChatRepository.save(UserChat(userId = userId, chatId = chatId, languages = languages))
 }

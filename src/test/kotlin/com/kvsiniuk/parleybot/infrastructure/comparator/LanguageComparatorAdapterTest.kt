@@ -5,7 +5,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class LanguageComparatorAdapterTest {
-
     private val comparator = LanguageComparatorAdapter()
 
     // ── Script-boundary detection ──────────────────────────────────────────
@@ -46,26 +45,32 @@ class LanguageComparatorAdapterTest {
 
     @Test
     fun `english to spanish with clearly different vocabulary is detected as translated`() {
-        assertTrue(comparator.wasTranslated(
-            "the beautiful house is very large and comfortable",
-            "la hermosa casa es muy grande y cómoda"
-        ))
+        assertTrue(
+            comparator.wasTranslated(
+                "the beautiful house is very large and comfortable",
+                "la hermosa casa es muy grande y cómoda",
+            ),
+        )
     }
 
     @Test
     fun `english to german is detected as translated`() {
-        assertTrue(comparator.wasTranslated(
-            "the weather is very cold today and it is snowing",
-            "das Wetter ist heute sehr kalt und es schneit"
-        ))
+        assertTrue(
+            comparator.wasTranslated(
+                "the weather is very cold today and it is snowing",
+                "das Wetter ist heute sehr kalt und es schneit",
+            ),
+        )
     }
 
     @Test
     fun `english to french is detected as translated`() {
-        assertTrue(comparator.wasTranslated(
-            "good morning how are you doing today",
-            "bonjour comment allez-vous aujourd'hui"
-        ))
+        assertTrue(
+            comparator.wasTranslated(
+                "good morning how are you doing today",
+                "bonjour comment allez-vous aujourd'hui",
+            ),
+        )
     }
 
     // ── Edge cases ─────────────────────────────────────────────────────────

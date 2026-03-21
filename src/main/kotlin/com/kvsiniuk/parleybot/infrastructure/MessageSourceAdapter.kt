@@ -9,7 +9,8 @@ import java.util.Locale
 class MessageSourceAdapter(
     private val messageSource: MessageSource,
 ) : MessageSourcePortOut {
-    override fun getMessage(code: String): String {
-        return messageSource.getMessage(code, null, Locale.ENGLISH)
-    }
+    override fun getMessage(
+        code: String,
+        locale: String,
+    ): String = messageSource.getMessage(code, null, Locale.forLanguageTag(locale))
 }
