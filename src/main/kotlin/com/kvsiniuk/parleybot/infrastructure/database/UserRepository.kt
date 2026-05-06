@@ -2,9 +2,8 @@ package com.kvsiniuk.parleybot.infrastructure.database
 
 import com.kvsiniuk.parleybot.application.model.User
 import org.springframework.data.repository.CrudRepository
-import java.util.UUID
 
-interface UserRepository : CrudRepository<User, UUID> {
+interface UserRepository : CrudRepository<User, String> {
     fun findByUserId(userId: Long): User?
 
     fun deleteByUserId(userId: Long): Boolean

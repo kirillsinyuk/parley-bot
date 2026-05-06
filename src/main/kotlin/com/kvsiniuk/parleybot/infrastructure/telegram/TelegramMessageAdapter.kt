@@ -21,16 +21,20 @@ class TelegramMessageAdapter(
         msgCode: String,
     ) {
         val responseMsg = messagePort.getMessage(msgCode)
-        mapMessage(chatId, responseMsg)
-            .let { bot.execute(it) }
+        val response = bot.execute(mapMessage(chatId, responseMsg))
+        if (!response.isOk) {
+            logger.error("Failed to send message to chat $chatId (code=$msgCode): ${response.description()}")
+        }
     }
 
     override fun sendMessage(
         chatId: Long,
         message: String,
     ) {
-        mapMessage(chatId, message)
-            .let { bot.execute(it) }
+        val response = bot.execute(mapMessage(chatId, message))
+        if (!response.isOk) {
+            logger.error("Failed to send message to chat $chatId: ${response.description()}")
+        }
     }
 
     override fun sendVoice(

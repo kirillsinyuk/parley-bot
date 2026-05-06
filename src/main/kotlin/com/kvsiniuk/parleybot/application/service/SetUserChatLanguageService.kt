@@ -4,8 +4,8 @@ import com.kvsiniuk.parleybot.application.model.UserChat
 import com.kvsiniuk.parleybot.infrastructure.database.UserChatRepository
 import com.kvsiniuk.parleybot.port.input.SetUserChatLanguagePortIn
 import com.kvsiniuk.parleybot.port.input.model.SetLanguagesRequest
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class SetUserChatLanguageService(

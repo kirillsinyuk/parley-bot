@@ -21,7 +21,7 @@ class SetLanguageCmdHandler(
             setLanguagePortIn.setLanguages(SetLanguagesRequest(update.chatId, update.userId, languages))
             telegramMessagePort.sendMessageByCode(update.chatId, "command.set_lang.response")
         } else {
-            telegramMessagePort.sendMessage(update.chatId, "Couldn't set language. Valid values: ${Language.entries}")
+            telegramMessagePort.sendMessageByCode(update.chatId, "command.set_lang.invalid-response")
         }
     }
 

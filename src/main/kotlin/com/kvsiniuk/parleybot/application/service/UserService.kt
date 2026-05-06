@@ -3,6 +3,7 @@ package com.kvsiniuk.parleybot.application.service
 import com.kvsiniuk.parleybot.application.model.User
 import com.kvsiniuk.parleybot.infrastructure.database.UserRepository
 import com.kvsiniuk.parleybot.port.input.UserPortIn
+import jakarta.transaction.Transactional
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
@@ -11,6 +12,7 @@ class UserService(
     private val userRepository: UserRepository,
 ) : UserPortIn {
     @Retryable
+    @Transactional
     override fun incUserMessageCount(userId: Long) {
         getUser(userId)
             .also { it.incMessageCount() }
@@ -18,6 +20,7 @@ class UserService(
     }
 
     @Retryable
+    @Transactional
     override fun incUserExplainCount(userId: Long) {
         getUser(userId)
             .also { it.incExplainCount() }
@@ -25,6 +28,7 @@ class UserService(
     }
 
     @Retryable
+    @Transactional
     override fun incUserVoiceCount(userId: Long) {
         getUser(userId)
             .also { it.incVoiceCount() }
