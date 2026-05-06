@@ -47,16 +47,16 @@ class UserLeftGroupHandlerTest {
 
     @Test
     fun `deletes the user's chat record when they leave`() {
-        handler.process(update(userId = 99L, userLeftGroup = true))
+        handler.process(update(userId = 99L, chatId = 10L, userLeftGroup = true))
 
-        verify { deletePort.deleteUserChat(DeleteUserChatRequest(userId = 99L)) }
+        verify { deletePort.deleteUserChat(DeleteUserChatRequest(userId = 99L, chatId = 10L)) }
     }
 
     @Test
     fun `deletes the user's chat record when they send the EXIT command`() {
-        handler.process(update(userId = 55L, message = "/exit"))
+        handler.process(update(userId = 55L, chatId = 20L, message = "/exit"))
 
-        verify { deletePort.deleteUserChat(DeleteUserChatRequest(userId = 55L)) }
+        verify { deletePort.deleteUserChat(DeleteUserChatRequest(userId = 55L, chatId = 20L)) }
     }
 
     // ── helpers ────────────────────────────────────────────────────────────
@@ -64,10 +64,12 @@ class UserLeftGroupHandlerTest {
     private fun update(
         message: String? = null,
         userId: Long = 1L,
+        chatId: Long = 1L,
         userLeftGroup: Boolean = false,
     ) = TelegramUpdateMessage(
         message = message,
         userId = userId,
+        chatId = chatId,
         userLeftGroup = userLeftGroup,
         language = null,
         voiceFileId = null,
