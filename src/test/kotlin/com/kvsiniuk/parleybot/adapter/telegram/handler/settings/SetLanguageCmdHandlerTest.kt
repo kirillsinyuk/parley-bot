@@ -71,7 +71,7 @@ class SetLanguageCmdHandlerTest {
         handler.process(update("/lang KLINGON"))
 
         verify(exactly = 0) { setLanguagePortIn.setLanguages(any()) }
-        verify { telegramMessagePort.sendMessage(CHAT_ID, any()) }
+        verify { telegramMessagePort.sendMessageByCode(CHAT_ID, "command.set_lang.invalid-response") }
     }
 
     @Test
