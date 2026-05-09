@@ -2,15 +2,12 @@ package com.kvsiniuk.parleybot.infrastructure.comparator
 
 import com.kvsiniuk.parleybot.port.output.LanguageComparatorPortOut
 import mu.KLogging
-import org.springframework.retry.annotation.Backoff
-import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import java.text.Normalizer
 import kotlin.math.sqrt
 
 @Component
 class LanguageComparatorAdapter : LanguageComparatorPortOut {
-    @Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
     override fun wasTranslated(
         sourceText: String,
         targetText: String,

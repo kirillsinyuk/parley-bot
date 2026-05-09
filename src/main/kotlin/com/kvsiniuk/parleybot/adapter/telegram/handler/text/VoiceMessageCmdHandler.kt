@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class VoiceMessageCmdHandler(
-    private val telegramFilePor: TelegramFilePortOut,
+    private val telegramFilePort: TelegramFilePortOut,
     private val speechToTextPort: SpeechToTextPortOut,
     private val translationProcessingPort: TranslationProcessingPortIn,
     private val telegramMessagePort: TelegramMessagePortOut,
@@ -19,7 +19,7 @@ class VoiceMessageCmdHandler(
     override fun process(update: TelegramUpdateMessage) {
         val transcribed =
             update.voiceFileId!!
-                .let { telegramFilePor.getFileContent(it) }
+                .let { telegramFilePort.getFileContent(it) }
                 .let { speechToTextPort.translateToText(it.file) }
         if (transcribed == null) {
             telegramMessagePort.sendMessageByCode(update.chatId, "command.voice.transcription-error")

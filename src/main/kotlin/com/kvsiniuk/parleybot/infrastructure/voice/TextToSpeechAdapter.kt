@@ -20,8 +20,13 @@ class TextToSpeechAdapter(
     @Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
     override fun translateToVoice(text: String): File {
         val tempFile = File.createTempFile("upload_", ".mp3")
-        openaiClientCall(text).use { it.copyTo(tempFile.outputStream()) }
-        return tempFile
+        try {
+            openaiClientCall(text).use { it.copyTo(tempFile.outputStream()) }
+            return tempFile
+        } catch (e: Exception) {
+            tempFile.delete()
+            throw e
+        }
     }
 
     private fun openaiClientCall(sourceText: String): InputStream {

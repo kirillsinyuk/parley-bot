@@ -7,6 +7,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
 import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 import jakarta.persistence.Version
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -15,7 +16,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity
-@Table(name = "user_chat")
+@Table(name = "user_chat", uniqueConstraints = [UniqueConstraint(columnNames = ["user_id", "chat_id"])])
 @EntityListeners(AuditingEntityListener::class)
 class UserChat(
     @Id
