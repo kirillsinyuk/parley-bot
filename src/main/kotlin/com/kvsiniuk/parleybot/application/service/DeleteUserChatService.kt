@@ -10,6 +10,6 @@ class DeleteUserChatService(
     private val userChatRepository: UserChatRepository,
 ) : DeleteUserChatPortIn {
     override fun deleteUserChat(request: DeleteUserChatRequest) {
-        userChatRepository.deleteByUserId(request.userId)
+        userChatRepository.deleteByUserIdAndChatId(request.userId, request.chatId)
     }
 }

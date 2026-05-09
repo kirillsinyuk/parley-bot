@@ -14,5 +14,5 @@ interface UserChatRepository : CrudRepository<UserChat, UUID> {
         chatId: Long,
     ): UserChat?
 
-    fun deleteByUserId(userId: Long): Boolean
+    fun deleteByUserIdAndChatId(userId: Long, chatId: Long): Boolean
 }

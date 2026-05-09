@@ -12,7 +12,7 @@ class UserLeftGroupHandler(
     private val deleteUserChatPortIn: DeleteUserChatPortIn,
 ) : TelegramUpdateHandler {
     override fun process(update: TelegramUpdateMessage) {
-        deleteUserChatPortIn.deleteUserChat(DeleteUserChatRequest(update.userId))
+        deleteUserChatPortIn.deleteUserChat(DeleteUserChatRequest(update.userId, update.chatId))
     }
 
     override fun canApply(update: TelegramUpdateMessage) =
