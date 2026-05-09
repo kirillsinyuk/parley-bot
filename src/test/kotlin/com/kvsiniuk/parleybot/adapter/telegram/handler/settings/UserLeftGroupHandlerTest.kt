@@ -10,7 +10,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class UserLeftGroupHandlerTest {
-
     private val deletePort = mockk<DeleteUserChatPortIn>(relaxed = true)
     private val handler = UserLeftGroupHandler(deletePort)
 

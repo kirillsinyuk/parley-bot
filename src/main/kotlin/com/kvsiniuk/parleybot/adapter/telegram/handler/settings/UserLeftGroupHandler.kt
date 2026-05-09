@@ -15,6 +15,5 @@ class UserLeftGroupHandler(
         deleteUserChatPortIn.deleteUserChat(DeleteUserChatRequest(update.userId, update.chatId))
     }
 
-    override fun canApply(update: TelegramUpdateMessage) =
-        update.userLeftGroup || update.message?.equals(BotCommand.EXIT.command) ?: false
+    override fun canApply(update: TelegramUpdateMessage) = update.userLeftGroup || update.message?.equals(BotCommand.EXIT.command) ?: false
 }
