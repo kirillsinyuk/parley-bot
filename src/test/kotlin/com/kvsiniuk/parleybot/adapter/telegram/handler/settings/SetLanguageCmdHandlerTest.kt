@@ -14,7 +14,6 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class SetLanguageCmdHandlerTest {
-
     private val telegramMessagePort = mockk<TelegramMessagePortOut>(relaxed = true)
     private val setLanguagePortIn = mockk<SetUserChatLanguagePortIn>(relaxed = true)
     private val handler = SetLanguageCmdHandler(telegramMessagePort, setLanguagePortIn)
@@ -72,7 +71,7 @@ class SetLanguageCmdHandlerTest {
         handler.process(update("/lang KLINGON"))
 
         verify(exactly = 0) { setLanguagePortIn.setLanguages(any()) }
-        verify { telegramMessagePort.sendMessage(CHAT_ID, any()) }
+        verify { telegramMessagePort.sendMessageByCode(CHAT_ID, "command.set_lang.invalid-response") }
     }
 
     @Test
@@ -93,13 +92,14 @@ class SetLanguageCmdHandlerTest {
 
     // ── helpers ────────────────────────────────────────────────────────────
 
-    private fun update(message: String) = TelegramUpdateMessage(
-        message = message,
-        chatId = CHAT_ID,
-        userId = USER_ID,
-        language = null,
-        voiceFileId = null,
-    )
+    private fun update(message: String) =
+        TelegramUpdateMessage(
+            message = message,
+            chatId = CHAT_ID,
+            userId = USER_ID,
+            language = null,
+            voiceFileId = null,
+        )
 
     companion object {
         private const val CHAT_ID = 10L
