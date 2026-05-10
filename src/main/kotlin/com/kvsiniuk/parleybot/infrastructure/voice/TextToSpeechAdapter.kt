@@ -1,49 +1,27 @@
 package com.kvsiniuk.parleybot.infrastructure.voice
 
 import com.kvsiniuk.parleybot.port.output.TextToSpeechPortOut
-import com.openai.client.OpenAIClient
-import com.openai.models.audio.speech.SpeechCreateParams
-import com.openai.models.audio.speech.SpeechModel
-import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.ai.audio.tts.TextToSpeechPrompt
+import org.springframework.ai.openai.OpenAiAudioSpeechModel
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import java.io.File
-import java.io.InputStream
-
-private val logger = KotlinLogging.logger {}
 
 @Component
 class TextToSpeechAdapter(
-    private val openaiClient: OpenAIClient,
+    private val speechModel: OpenAiAudioSpeechModel,
 ) : TextToSpeechPortOut {
-    private final val systemPrompt = "Speak in a neutral and positive tone."
-
     @Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
     override fun translateToVoice(text: String): File {
         val tempFile = File.createTempFile("upload_", ".mp3")
         try {
-            openaiClientCall(text).use { it.copyTo(tempFile.outputStream()) }
+            val audio = speechModel.call(TextToSpeechPrompt(text)).result.output
+            tempFile.writeBytes(audio)
             return tempFile
         } catch (e: Exception) {
             tempFile.delete()
             throw e
         }
-    }
-
-    private fun openaiClientCall(sourceText: String): InputStream {
-        val params =
-            SpeechCreateParams
-                .builder()
-                .model(SpeechModel.GPT_4O_MINI_TTS)
-                .input(sourceText)
-                .voice(SpeechCreateParams.Voice.UnionMember1.ALLOY)
-                .instructions(systemPrompt)
-                .build()
-        return openaiClient
-            .audio()
-            .speech()
-            .create(params)
-            .body()
     }
 }

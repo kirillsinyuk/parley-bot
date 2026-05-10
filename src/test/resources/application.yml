@@ -21,9 +21,7 @@ spring:
 bot:
   token: 123testToken
 
-open-ai:
-  host: https://api.openai.com
-  api-key: $someToken
+spring.ai.openai.api-key: $someToken
 
 admin:
   chat-id: 123

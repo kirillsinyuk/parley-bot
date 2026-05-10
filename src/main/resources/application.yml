@@ -17,6 +17,21 @@ spring:
       hibernate:
         dialect: org.hibernate.community.dialect.SQLiteDialect
     open-in-view: false
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: gpt-4.1-nano
+      audio:
+        speech:
+          options:
+            model: gpt-4o-mini-tts
+            voice: alloy
+            response-format: mp3
+        transcription:
+          options:
+            model: gpt-4o-mini-transcribe
 management:
   endpoints:
     web:
@@ -26,10 +41,5 @@ management:
 bot:
   token: ${BOT_TOKEN}
 
-open-ai:
-  host: https://api.openai.com
-  api-key: ${OPENAI_API_KEY}
-
 admin:
   chat-id: ${ADMIN_CHAT_ID}
-

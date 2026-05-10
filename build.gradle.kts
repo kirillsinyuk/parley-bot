@@ -14,6 +14,7 @@ version = "0.0.1"
 description = "parley-bot"
 
 val mapstructVersion = "1.6.3"
+val springAiVersion = "2.0.0-M6"
 
 java {
 	toolchain {
@@ -27,6 +28,13 @@ allOpen {
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo.spring.io/milestone") }
+}
+
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.ai:spring-ai-bom:$springAiVersion")
+	}
 }
 
 dependencies {
@@ -39,7 +47,7 @@ dependencies {
 	implementation("org.xerial:sqlite-jdbc:3.50.3.0")
 	implementation("org.hibernate.orm:hibernate-community-dialects")
 
-	implementation("com.openai:openai-java:4.35.0")
+	implementation("org.springframework.ai:spring-ai-starter-model-openai")
 
 	implementation("org.springframework.retry:spring-retry:2.0.12")
 	implementation("org.springframework:spring-aspects")

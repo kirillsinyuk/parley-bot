@@ -1,28 +1,25 @@
 package com.kvsiniuk.parleybot.infrastructure.explanation
 
 import com.kvsiniuk.parleybot.port.output.ExplainMessagePortOut
-import com.openai.client.OpenAIClient
-import com.openai.models.ChatModel
-import com.openai.models.responses.EasyInputMessage
-import com.openai.models.responses.ResponseCreateParams
-import com.openai.models.responses.ResponseInputItem
-import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.ai.chat.messages.SystemMessage
+import org.springframework.ai.chat.messages.UserMessage
+import org.springframework.ai.chat.model.ChatModel
+import org.springframework.ai.chat.prompt.Prompt
+import org.springframework.ai.openai.OpenAiChatOptions
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
-private val logger = KotlinLogging.logger {}
-
 @Component
 class ExplainMessageAdapter(
-    private val openaiClient: OpenAIClient,
+    private val chatModel: ChatModel,
 ) : ExplainMessagePortOut {
     private final val systemPrompt = """
 		You are a language expert.
 
 		## OBJECTIVE
 		Briefly explain the provided text grammar and wording.
-		
+
 		## RULES
 		1. Correct the grammar if necessary. Don't correct minor typos, such as missed columns, dots or capital letters.
 		2. Briefly explain the grammar of provided text. Don't be too detailed.
@@ -35,43 +32,19 @@ class ExplainMessageAdapter(
     override fun explainMessage(
         text: String,
         languageCode: String,
-    ): String = openaiClientCall(text, languageCode)
-
-    private fun openaiClientCall(
-        text: String,
-        languageCode: String,
     ): String {
-        val params =
-            ResponseCreateParams
-                .builder()
-                .inputOfResponse(
-                    listOf(
-                        ResponseInputItem.ofEasyInputMessage(
-                            EasyInputMessage
-                                .builder()
-                                .role(EasyInputMessage.Role.SYSTEM)
-                                .content(systemPrompt)
-                                .build(),
-                        ),
-                        ResponseInputItem.ofEasyInputMessage(
-                            EasyInputMessage
-                                .builder()
-                                .role(EasyInputMessage.Role.USER)
-                                .content("targetLanguageCode=$languageCode; text=$text")
-                                .build(),
-                        ),
-                    ),
-                ).model(ChatModel.GPT_5_NANO)
-                .build()
-        return openaiClient
-            .responses()
-            .create(params)
-            .output()
-            .first { it.isMessage() }
-            .asMessage()
-            .content()
-            .first { it.isOutputText() }
-            .asOutputText()
-            .text()
+        val prompt =
+            Prompt(
+                listOf(
+                    SystemMessage(systemPrompt),
+                    UserMessage("targetLanguageCode=$languageCode; text=$text"),
+                ),
+                OpenAiChatOptions.builder().model("gpt-5-nano").build(),
+            )
+        return chatModel
+            .call(prompt)
+            .result!!
+            .output
+            .text!!
     }
 }
