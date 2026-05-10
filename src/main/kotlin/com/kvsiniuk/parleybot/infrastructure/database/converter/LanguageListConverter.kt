@@ -8,14 +8,16 @@ import jakarta.persistence.Converter
 
 @Converter
 class LanguageListConverter : AttributeConverter<Set<Language>, String> {
-    private val mapper = ObjectMapper()
-
-    override fun convertToDatabaseColumn(attribute: Set<Language>?): String = mapper.writeValueAsString(attribute ?: emptySet<Language>())
+    override fun convertToDatabaseColumn(attribute: Set<Language>?): String = MAPPER.writeValueAsString(attribute ?: emptySet<Language>())
 
     override fun convertToEntityAttribute(dbData: String?): Set<Language> =
         if (dbData.isNullOrBlank()) {
             emptySet()
         } else {
-            mapper.readValue(dbData, object : TypeReference<Set<Language>>() {})
+            MAPPER.readValue(dbData, object : TypeReference<Set<Language>>() {})
         }
+
+    companion object {
+        private val MAPPER = ObjectMapper()
+    }
 }

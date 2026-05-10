@@ -17,10 +17,13 @@ class TranslateTextHandler(
     private val telegramMessagePortOut: TelegramMessagePortOut,
 ) : TelegramUpdateHandler {
     override fun process(update: TelegramUpdateMessage) {
-        GetTranslationsRequest(update.chatId, update.userId, update.message!!, update.replyText)
-            .let { translationProcessingPortIn.getTranslations(it) }
-            .forEach { message -> telegramMessagePortOut.sendMessage(update.chatId, message) }
-            .also { userPortIn.incUserMessageCount(update.userId) }
+        val translations =
+            GetTranslationsRequest(update.chatId, update.userId, update.message!!, update.replyText)
+                .let { translationProcessingPortIn.getTranslations(it) }
+        translations.forEach { telegramMessagePortOut.sendMessage(update.chatId, it) }
+        if (translations.isNotEmpty()) {
+            userPortIn.incUserMessageCount(update.userId)
+        }
     }
 
     override fun canApply(update: TelegramUpdateMessage) =
