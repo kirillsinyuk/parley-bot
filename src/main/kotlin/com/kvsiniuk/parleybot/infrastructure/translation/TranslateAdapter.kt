@@ -6,10 +6,12 @@ import com.openai.models.ChatModel
 import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseInputItem
-import mu.KLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class TranslateAdapter(
@@ -40,7 +42,7 @@ class TranslateAdapter(
         language: String,
         context: String?,
     ): String? {
-        logger.debug("Processing translation to $language: $text. Context: $context")
+        logger.debug { "Processing translation to $language: $text. Context: $context" }
         return openaiClientCall(text, language, context)
             .also { logger.debug { "Translation result: $it" } }
     }
@@ -51,26 +53,30 @@ class TranslateAdapter(
         context: String?,
     ): String {
         val params =
-            ResponseCreateParams.builder()
+            ResponseCreateParams
+                .builder()
                 .inputOfResponse(
                     listOf(
                         ResponseInputItem.ofEasyInputMessage(
-                            EasyInputMessage.builder()
+                            EasyInputMessage
+                                .builder()
                                 .role(EasyInputMessage.Role.SYSTEM)
                                 .content(systemPrompt)
                                 .build(),
                         ),
                         ResponseInputItem.ofEasyInputMessage(
-                            EasyInputMessage.builder()
+                            EasyInputMessage
+                                .builder()
                                 .role(EasyInputMessage.Role.USER)
                                 .content("targetLanguage=$language; context=$context; message=$message")
                                 .build(),
                         ),
                     ),
-                )
-                .model(ChatModel.GPT_4_1_NANO)
+                ).model(ChatModel.GPT_4_1_NANO)
                 .build()
-        return openaiClient.responses().create(params)
+        return openaiClient
+            .responses()
+            .create(params)
             .output()
             .first { it.isMessage() }
             .asMessage()
@@ -79,6 +85,4 @@ class TranslateAdapter(
             .asOutputText()
             .text()
     }
-
-    companion object : KLogging()
 }

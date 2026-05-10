@@ -16,8 +16,7 @@ class SetUserChatLanguageService(
         (
             userChatRepository.findByUserIdAndChatId(request.userId, request.chatId)
                 ?: UserChat(userId = request.userId, chatId = request.chatId)
-        )
-            .apply { languages = request.languages }
+        ).apply { languages = request.languages }
             .let { u -> userChatRepository.save(u) }
     }
 }

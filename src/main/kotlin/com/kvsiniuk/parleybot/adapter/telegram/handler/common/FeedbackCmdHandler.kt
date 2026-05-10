@@ -5,8 +5,10 @@ import com.kvsiniuk.parleybot.application.model.BotCommand
 import com.kvsiniuk.parleybot.application.model.TelegramUpdateMessage
 import com.kvsiniuk.parleybot.config.AdminConfigurationProperties
 import com.kvsiniuk.parleybot.port.output.TelegramMessagePortOut
-import mu.KLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class FeedbackCmdHandler(
@@ -15,10 +17,9 @@ class FeedbackCmdHandler(
 ) : AbstractCommandHandler(BotCommand.FEEDBACK) {
     override fun process(update: TelegramUpdateMessage) {
         val feedbackMsg = "A feedback from ${update.userId}, chatId ${update.chatId}: ${update.message}. Reply to: ${update.replyText}"
-        telegramMessagePort.sendMessage(adminConfigurationProperties.chatId, feedbackMsg)
+        telegramMessagePort
+            .sendMessage(adminConfigurationProperties.chatId, feedbackMsg)
             .also { logger.warn { feedbackMsg } }
         telegramMessagePort.sendMessageByCode(update.chatId, "command.feedback.response")
     }
-
-    companion object : KLogging()
 }

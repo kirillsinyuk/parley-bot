@@ -5,8 +5,10 @@ import com.kvsiniuk.parleybot.port.input.model.GetTranslationsRequest
 import com.kvsiniuk.parleybot.port.output.LanguageComparatorPortOut
 import com.kvsiniuk.parleybot.port.output.TranslationPortOut
 import com.kvsiniuk.parleybot.port.output.UserChatPortOut
-import mu.KLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class TranslationProcessingService(
@@ -15,7 +17,8 @@ class TranslationProcessingService(
     private val languageComparator: LanguageComparatorPortOut,
 ) : TranslationProcessingPortIn {
     override fun getTranslations(request: GetTranslationsRequest): List<String> =
-        userChatPortOut.findLanguagesForChat(request.chatId, request.userId)
+        userChatPortOut
+            .findLanguagesForChat(request.chatId, request.userId)
             .mapNotNull { translateText(request.message, it.languageName, request.replyTo) }
             .filter { languageComparator.wasTranslated(request.message, it) }
 
@@ -26,9 +29,7 @@ class TranslationProcessingService(
     ) = try {
         translateService.translate(message, language, replyTo)
     } catch (e: RuntimeException) {
-        logger.error("Error during translation to $language: $message", e)
+        logger.error(e) { "Error during translation to $language: $message" }
         null
     }
-
-    companion object : KLogging()
 }

@@ -5,9 +5,11 @@ import com.kvsiniuk.parleybot.adapter.telegram.handler.TelegramUpdateHandler
 import com.pengrad.telegrambot.TelegramBot
 import com.pengrad.telegrambot.UpdatesListener
 import com.pengrad.telegrambot.model.Update
+import io.github.oshai.kotlinlogging.KotlinLogging
 import jakarta.annotation.PostConstruct
-import mu.KLogging
 import org.springframework.stereotype.Component
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class BotUpdatesListener(
@@ -24,15 +26,14 @@ class BotUpdatesListener(
         updates?.forEach { update ->
             try {
                 val updateData = telegramUpdateMessageMapper.toMessage(update)
-                logger.debug("Processing update $updateData")
-                telegramUpdateHandlers.filter { it.canApply(updateData) }
+                logger.debug { "Processing update $updateData" }
+                telegramUpdateHandlers
+                    .filter { it.canApply(updateData) }
                     .forEach { it.process(updateData) }
             } catch (e: Exception) {
-                logger.error("Failed to process update: $update", e)
+                logger.error(e) { "Failed to process update: $update" }
             }
         }
         return UpdatesListener.CONFIRMED_UPDATES_ALL
     }
-
-    companion object : KLogging()
 }

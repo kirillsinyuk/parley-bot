@@ -1,10 +1,12 @@
 package com.kvsiniuk.parleybot.infrastructure.comparator
 
 import com.kvsiniuk.parleybot.port.output.LanguageComparatorPortOut
-import mu.KLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import java.text.Normalizer
 import kotlin.math.sqrt
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class LanguageComparatorAdapter : LanguageComparatorPortOut {
@@ -12,7 +14,7 @@ class LanguageComparatorAdapter : LanguageComparatorPortOut {
         sourceText: String,
         targetText: String,
     ): Boolean {
-        logger.debug("Processing text comparison. Source=$sourceText. TargetText=$targetText")
+        logger.debug { "Processing text comparison. Source=$sourceText. TargetText=$targetText" }
         // Fast script check: if one text uses non-ASCII characters and the other doesn't,
         // they are definitely in different scripts → translation occurred.
         if (sourceText.any { it.code > 127 } != targetText.any { it.code > 127 }) {
@@ -48,7 +50,8 @@ class LanguageComparatorAdapter : LanguageComparatorPortOut {
     }
 
     private fun normalize(text: String): List<String> =
-        Normalizer.normalize(text.lowercase(), Normalizer.Form.NFD)
+        Normalizer
+            .normalize(text.lowercase(), Normalizer.Form.NFD)
             .replace("\\p{M}".toRegex(), "") // remove diacritics
             .replace("[^\\p{L}\\p{Nd} ]+".toRegex(), " ") // keep only letters/digits
             .split(" ")
@@ -67,7 +70,8 @@ class LanguageComparatorAdapter : LanguageComparatorPortOut {
     }
 
     private fun charDistribution(text: String): Map<Char, Int> =
-        text.filter { it.isLetter() }
+        text
+            .filter { it.isLetter() }
             .groupingBy { it }
             .eachCount()
 
@@ -90,7 +94,7 @@ class LanguageComparatorAdapter : LanguageComparatorPortOut {
         return if (normA == 0.0 || normB == 0.0) 0.0 else dot / (sqrt(normA) * sqrt(normB))
     }
 
-    companion object : KLogging() {
+    companion object {
         /** Jaccard token overlap above this value means too many shared words → not translated. */
         private const val OVERLAP_THRESHOLD = 0.25
 

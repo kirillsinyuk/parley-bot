@@ -6,10 +6,12 @@ import com.pengrad.telegrambot.TelegramBot
 import com.pengrad.telegrambot.model.request.ParseMode
 import com.pengrad.telegrambot.request.SendMessage
 import com.pengrad.telegrambot.request.SendVoice
-import mu.KLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Component
 import java.io.File
 import java.nio.file.Files
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class TelegramMessageAdapter(
@@ -23,7 +25,7 @@ class TelegramMessageAdapter(
         val responseMsg = messagePort.getMessage(msgCode)
         val response = bot.execute(mapMessage(chatId, responseMsg))
         if (!response.isOk) {
-            logger.error("Failed to send message to chat $chatId (code=$msgCode): ${response.description()}")
+            logger.error { "Failed to send message to chat $chatId (code=$msgCode): ${response.description()}" }
         }
     }
 
@@ -33,7 +35,7 @@ class TelegramMessageAdapter(
     ) {
         val response = bot.execute(mapMessage(chatId, message))
         if (!response.isOk) {
-            logger.error("Failed to send message to chat $chatId: ${response.description()}")
+            logger.error { "Failed to send message to chat $chatId: ${response.description()}" }
         }
     }
 
@@ -44,7 +46,7 @@ class TelegramMessageAdapter(
         try {
             val response = bot.execute(mapVoice(chatId, voice))
             if (!response.isOk) {
-                logger.error("Failed to send voice to chat $chatId: ${response.description()}")
+                logger.error { "Failed to send voice to chat $chatId: ${response.description()}" }
             }
         } finally {
             Files.deleteIfExists(voice.toPath())
@@ -55,8 +57,6 @@ class TelegramMessageAdapter(
         chatId: Long,
         msg: File,
     ) = SendVoice(chatId, msg)
-
-    companion object : KLogging()
 
     private fun mapMessage(
         chatId: Long,

@@ -1,6 +1,8 @@
 package com.kvsiniuk.parleybot.application.model
 
-enum class Language(val languageName: String) {
+enum class Language(
+    val languageName: String,
+) {
     EN("english"),
     ES("spanish"),
     FR("french"),

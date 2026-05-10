@@ -1,8 +1,8 @@
-FROM gradle:8.1.1-jdk17
+FROM gradle:8.14.3-jdk21
 COPY ./ ./
 RUN gradle build
 
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:21-jre
 
 ARG JAR=/build/libs/*.jar
 COPY $JAR parley-bot.jar
