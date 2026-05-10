@@ -3,9 +3,9 @@ package com.kvsiniuk.parleybot.application.service
 import com.kvsiniuk.parleybot.application.model.User
 import com.kvsiniuk.parleybot.infrastructure.database.UserRepository
 import com.kvsiniuk.parleybot.port.input.UserPortIn
-import jakarta.transaction.Transactional
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 
 @Component
 class UserService(

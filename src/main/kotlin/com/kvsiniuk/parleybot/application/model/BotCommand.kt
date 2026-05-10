@@ -13,4 +13,4 @@ enum class BotCommand(
     EXPLAIN("/explain"),
 }
 
-val MENU_COMMANDS = BotCommand.values().map { it.command }
+val MENU_COMMANDS = BotCommand.entries.map { it.command }
