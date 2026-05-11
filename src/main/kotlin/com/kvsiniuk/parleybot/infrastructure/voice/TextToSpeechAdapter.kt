@@ -4,12 +4,14 @@ import com.kvsiniuk.parleybot.port.output.TextToSpeechPortOut
 import com.openai.client.OpenAIClient
 import com.openai.models.audio.speech.SpeechCreateParams
 import com.openai.models.audio.speech.SpeechModel
-import mu.KLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 import java.io.File
 import java.io.InputStream
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class TextToSpeechAdapter(
@@ -31,15 +33,17 @@ class TextToSpeechAdapter(
 
     private fun openaiClientCall(sourceText: String): InputStream {
         val params =
-            SpeechCreateParams.builder()
+            SpeechCreateParams
+                .builder()
                 .model(SpeechModel.GPT_4O_MINI_TTS)
                 .input(sourceText)
-                .voice(SpeechCreateParams.Voice.ALLOY)
+                .voice(SpeechCreateParams.Voice.UnionMember1.ALLOY)
                 .instructions(systemPrompt)
                 .build()
-        return openaiClient.audio().speech().create(params)
+        return openaiClient
+            .audio()
+            .speech()
+            .create(params)
             .body()
     }
-
-    companion object : KLogging()
 }

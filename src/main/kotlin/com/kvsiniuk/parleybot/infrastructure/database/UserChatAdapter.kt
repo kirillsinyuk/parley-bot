@@ -12,7 +12,8 @@ class UserChatAdapter(
         chatId: Long,
         excludeUserId: Long,
     ): List<Language> =
-        userChatRepository.findAllByChatId(chatId)
+        userChatRepository
+            .findAllByChatId(chatId)
             .filter { it.userId != excludeUserId }
             .flatMap { it.languages }
             .distinct()

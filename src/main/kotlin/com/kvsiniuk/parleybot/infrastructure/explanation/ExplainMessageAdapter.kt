@@ -6,10 +6,12 @@ import com.openai.models.ChatModel
 import com.openai.models.responses.EasyInputMessage
 import com.openai.models.responses.ResponseCreateParams
 import com.openai.models.responses.ResponseInputItem
-import mu.KLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+
+private val logger = KotlinLogging.logger {}
 
 @Component
 class ExplainMessageAdapter(
@@ -33,35 +35,37 @@ class ExplainMessageAdapter(
     override fun explainMessage(
         text: String,
         languageCode: String,
-    ): String {
-        return openaiClientCall(text, languageCode)
-    }
+    ): String = openaiClientCall(text, languageCode)
 
     private fun openaiClientCall(
         text: String,
         languageCode: String,
     ): String {
         val params =
-            ResponseCreateParams.builder()
+            ResponseCreateParams
+                .builder()
                 .inputOfResponse(
                     listOf(
                         ResponseInputItem.ofEasyInputMessage(
-                            EasyInputMessage.builder()
+                            EasyInputMessage
+                                .builder()
                                 .role(EasyInputMessage.Role.SYSTEM)
                                 .content(systemPrompt)
                                 .build(),
                         ),
                         ResponseInputItem.ofEasyInputMessage(
-                            EasyInputMessage.builder()
+                            EasyInputMessage
+                                .builder()
                                 .role(EasyInputMessage.Role.USER)
                                 .content("targetLanguageCode=$languageCode; text=$text")
                                 .build(),
                         ),
                     ),
-                )
-                .model(ChatModel.GPT_5_NANO)
+                ).model(ChatModel.GPT_5_NANO)
                 .build()
-        return openaiClient.responses().create(params)
+        return openaiClient
+            .responses()
+            .create(params)
             .output()
             .first { it.isMessage() }
             .asMessage()
@@ -70,6 +74,4 @@ class ExplainMessageAdapter(
             .asOutputText()
             .text()
     }
-
-    companion object : KLogging()
 }

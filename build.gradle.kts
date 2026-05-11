@@ -1,23 +1,23 @@
 plugins {
-	kotlin("jvm") version "1.9.25"
-	kotlin("plugin.spring") version "1.9.25"
-	kotlin("plugin.jpa") version "1.9.25"
-	kotlin("plugin.allopen") version "1.9.25"
-	id("org.springframework.boot") version "3.5.7"
+	kotlin("jvm") version "2.2.20"
+	kotlin("plugin.spring") version "2.2.20"
+	kotlin("plugin.jpa") version "2.2.20"
+	kotlin("plugin.allopen") version "2.2.20"
+	id("org.springframework.boot") version "4.0.5"
 	id("io.spring.dependency-management") version "1.1.7"
-	id("org.jmailen.kotlinter") version "4.2.0"
-	kotlin("kapt") version "1.9.25"
+	id("org.jmailen.kotlinter") version "5.4.2"
+	kotlin("kapt") version "2.2.20"
 }
 
 group = "com.kvsiniuk"
 version = "0.0.1"
 description = "parley-bot"
 
-val mapstructVersion = "1.5.3.Final"
+val mapstructVersion = "1.6.3"
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -36,27 +36,28 @@ dependencies {
 	implementation("io.micrometer:micrometer-registry-prometheus")
 
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.xerial:sqlite-jdbc:3.45.2.0")
-	implementation("org.hibernate.orm:hibernate-community-dialects:6.4.4.Final")
+	implementation("org.xerial:sqlite-jdbc:3.50.3.0")
+	implementation("org.hibernate.orm:hibernate-community-dialects")
 
-	implementation("com.openai:openai-java:4.8.0")
+	implementation("com.openai:openai-java:4.35.0")
 
-	implementation("org.springframework.retry:spring-retry")
+	implementation("org.springframework.retry:spring-retry:2.0.12")
 	implementation("org.springframework:spring-aspects")
 
-	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("tools.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
-	implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+	implementation("io.github.oshai:kotlin-logging-jvm:7.0.12")
 
 	kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
 	implementation("org.mapstruct:mapstruct:$mapstructVersion")
 
-	implementation("com.github.pengrad:java-telegram-bot-api:9.2.0")
+	implementation("com.github.pengrad:java-telegram-bot-api:9.6.0")
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.boot:spring-boot-starter-data-jpa-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-	testImplementation("io.mockk:mockk:1.13.12")
+	testImplementation("io.mockk:mockk:1.14.9")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

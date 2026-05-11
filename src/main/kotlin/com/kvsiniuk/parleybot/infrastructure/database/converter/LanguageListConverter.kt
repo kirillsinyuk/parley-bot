@@ -1,10 +1,10 @@
 package com.kvsiniuk.parleybot.infrastructure.database.converter
 
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.kvsiniuk.parleybot.application.model.Language
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
+import tools.jackson.core.type.TypeReference
+import tools.jackson.databind.json.JsonMapper
 
 @Converter
 class LanguageListConverter : AttributeConverter<Set<Language>, String> {
@@ -18,6 +18,6 @@ class LanguageListConverter : AttributeConverter<Set<Language>, String> {
         }
 
     companion object {
-        private val MAPPER = ObjectMapper()
+        private val MAPPER = JsonMapper.builder().build()
     }
 }
