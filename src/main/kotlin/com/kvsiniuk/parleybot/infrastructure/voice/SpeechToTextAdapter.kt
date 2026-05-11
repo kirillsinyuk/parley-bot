@@ -1,43 +1,23 @@
 package com.kvsiniuk.parleybot.infrastructure.voice
 
 import com.kvsiniuk.parleybot.port.output.SpeechToTextPortOut
-import com.openai.client.OpenAIClient
-import com.openai.models.audio.AudioModel
-import com.openai.models.audio.transcriptions.TranscriptionCreateParams
-import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.ai.audio.transcription.AudioTranscriptionPrompt
+import org.springframework.ai.openai.OpenAiAudioTranscriptionModel
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.retry.annotation.Backoff
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
-import java.nio.file.Files
-
-private val logger = KotlinLogging.logger {}
 
 @Component
 class SpeechToTextAdapter(
-    private val openaiClient: OpenAIClient,
+    private val transcriptionModel: OpenAiAudioTranscriptionModel,
 ) : SpeechToTextPortOut {
     @Retryable(backoff = Backoff(delay = 100, multiplier = 2.0))
-    override fun translateToText(file: ByteArray): String? = openaiClientCall(file)
-
-    private fun openaiClientCall(file: ByteArray): String? {
-        val tempFile = Files.createTempFile("voice", ".ogg")
-        try {
-            Files.write(tempFile, file)
-            val param =
-                TranscriptionCreateParams
-                    .builder()
-                    .file(tempFile)
-                    .model(AudioModel.GPT_4O_MINI_TRANSCRIBE)
-                    .build()
-            return openaiClient
-                .audio()
-                .transcriptions()
-                .create(param)
-                .transcription()
-                .map { it.text() }
-                .orElse(null)
-        } finally {
-            Files.deleteIfExists(tempFile)
-        }
+    override fun translateToText(file: ByteArray): String? {
+        val resource =
+            object : ByteArrayResource(file) {
+                override fun getFilename(): String = "voice.ogg"
+            }
+        return transcriptionModel.call(AudioTranscriptionPrompt(resource)).result.output
     }
 }

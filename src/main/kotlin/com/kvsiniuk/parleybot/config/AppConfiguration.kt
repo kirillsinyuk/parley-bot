@@ -8,5 +8,5 @@ import org.springframework.retry.annotation.EnableRetry
 @Configuration
 @EnableRetry
 @EnableJpaAuditing
-@EnableConfigurationProperties(value = [OpenaiConfigurationProperties::class, AdminConfigurationProperties::class])
+@EnableConfigurationProperties(value = [AdminConfigurationProperties::class])
 class AppConfiguration
