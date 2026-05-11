@@ -16,11 +16,16 @@ class TranslationProcessingService(
     private val translateService: TranslationPortOut,
     private val languageComparator: LanguageComparatorPortOut,
 ) : TranslationProcessingPortIn {
-    override fun getTranslations(request: GetTranslationsRequest): List<String> =
-        userChatPortOut
+    override fun getTranslations(request: GetTranslationsRequest): List<String> {
+        if (!hasTranslatableContent(request.message)) {
+            logger.debug { "Skipping translation, message has no letters: ${request.message}" }
+            return emptyList()
+        }
+        return userChatPortOut
             .findLanguagesForChat(request.chatId, request.userId)
             .mapNotNull { translateText(request.message, it.languageName, request.replyTo) }
             .filter { languageComparator.wasTranslated(request.message, it) }
+    }
 
     private fun translateText(
         message: String,
@@ -31,5 +36,11 @@ class TranslationProcessingService(
     } catch (e: RuntimeException) {
         logger.error(e) { "Error during translation to $language: $message" }
         null
+    }
+
+    private fun hasTranslatableContent(message: String): Boolean = LETTER_REGEX.containsMatchIn(message)
+
+    companion object {
+        private val LETTER_REGEX = Regex("\\p{L}")
     }
 }

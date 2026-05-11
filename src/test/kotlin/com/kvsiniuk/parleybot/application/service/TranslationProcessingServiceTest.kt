@@ -9,6 +9,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -85,6 +87,48 @@ class TranslationProcessingServiceTest {
         service.getTranslations(request("hello"))
 
         verify(exactly = 1) { translateService.translate("hello", "spanish", null) }
+    }
+
+    @ParameterizedTest
+    @ValueSource(
+        strings = [
+            "",
+            "   ",
+            "...",
+            "!!!",
+            ",,, ...",
+            "?!.,;:",
+            "😀",
+            "😀😀😀",
+            "😀 🎉 🚀",
+            "!!! 😀 ???",
+            "123",
+            "42 + 7 = 49",
+            "100%",
+            "$1,000.00",
+            "+1 (555) 123-4567",
+            "—",
+            "🇺🇸 🇩🇪",
+        ],
+    )
+    fun `returns empty list and skips translation when message has no letters`(message: String) {
+        val result = service.getTranslations(request(message))
+
+        assertTrue(result.isEmpty())
+        verify(exactly = 0) { userChatPortOut.findLanguagesForChat(any(), any()) }
+        verify(exactly = 0) { translateService.translate(any(), any(), any()) }
+        verify(exactly = 0) { languageComparator.wasTranslated(any(), any()) }
+    }
+
+    @Test
+    fun `translates when message mixes a letter with punctuation and emoji`() {
+        every { userChatPortOut.findLanguagesForChat(CHAT_ID, SENDER_ID) } returns listOf(Language.ES)
+        every { translateService.translate("ok! 😀", "spanish", null) } returns "¡bien! 😀"
+        every { languageComparator.wasTranslated("ok! 😀", "¡bien! 😀") } returns true
+
+        val result = service.getTranslations(request("ok! 😀"))
+
+        assertEquals(listOf("¡bien! 😀"), result)
     }
 
     // ── helpers ────────────────────────────────────────────────────────────
